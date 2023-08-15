@@ -3,6 +3,9 @@ export default {
   content: ['./index.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
   theme: {
     extend: {
+      screens: {
+        lg: '950px',
+      },
       colors: {
         'site-primary': '#00EFC5',
         'site-green': '#9AE576',

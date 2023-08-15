@@ -1,5 +1,5 @@
 <template>
-  <aside class="flex relative">
+  <aside class="flex fixed z-20 bg-black md:relative h-[100dvh]">
     <div
       class="flex py-10 w-[17rem] justify-center border-r border-site-gray overflow-hidden relative"
       :class="{
@@ -43,7 +43,7 @@
       </header>
     </div>
     <div
-      class="flex absolute h-full items-center"
+      class="flex absolute h-[100dvh] md:h-full items-center"
       :class="{
         'animate-toggle-close': !isMenuOpen,
         'animate-toggle-open': isMenuOpen && isLoadedOnce,

@@ -1,8 +1,8 @@
 <template>
-  <div class="flex items-center gap-x-6 bg-site-green rounded-xl text-black py-6 px-10">
+  <div class="flex items-center gap-x-4 bg-site-green rounded-xl text-black py-6 px-10 w-fit">
     <Icon class="h-8 w-8" />
     <div class="flex flex-col gap-y-1 font-montserrat">
-      <p>{{ name }}</p>
+      <p class="text-center">{{ name }}</p>
       <p class="font-semibold">&#8369; {{ value }}</p>
     </div>
   </div>
