@@ -1,5 +1,5 @@
 <template>
-  <div class="flex" :class="routeContainerClass">
+  <div class="flex cursor-default" :class="routeContainerClass">
     <SideMenu v-if="pathName !== Routes.LOGIN" />
     <main class="flex flex-col items-center grow" :class="routeClass">
       <RouterView />

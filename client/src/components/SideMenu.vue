@@ -11,34 +11,10 @@
         <img src="/images/menu-icon.png" alt="Menu" class="p-5 aspect-square h-[10rem]" />
         <h1 class="text-site-primary text-3xl font-karla mb-7">Green Wallet</h1>
         <nav class="flex flex-col w-full gap-7">
-          <RouterLink
-            to="/profile"
-            class="flex w-full gap-3 rounded px-8 py-3 text-white hover:bg-site-primary hover:text-black duration-300"
-          >
-            <UserCircleIcon class="h-6 w-6" />
-            <p class="text-lg font-montserrat">Profile</p></RouterLink
-          >
-          <RouterLink
-            to="/dashboard"
-            class="flex w-full gap-3 rounded px-8 py-3 text-white hover:bg-site-primary hover:text-black duration-300"
-          >
-            <ComputerDesktopIcon class="h-6 w-6" />
-            <p class="text-lg font-montserrat">Dashboard</p></RouterLink
-          >
-          <RouterLink
-            to="/transactions"
-            class="flex w-full gap-3 rounded px-8 py-3 text-white hover:bg-site-primary hover:text-black duration-300"
-          >
-            <BanknotesIcon class="h-6 w-6" />
-            <p class="text-lg font-montserrat">Transactions</p></RouterLink
-          >
-          <RouterLink
-            to="/login"
-            class="flex w-full gap-3 rounded px-8 py-3 text-white hover:bg-site-primary hover:text-black duration-300"
-          >
-            <ArrowLeftCircleIcon class="h-6 w-6" />
-            <p class="text-lg font-montserrat">Logout</p></RouterLink
-          >
+          <MenuItem :icon="UserCircleIcon" name="Profile" :route="Routes.PROFILE" />
+          <MenuItem :icon="ComputerDesktopIcon" name="Dashboard" :route="Routes.DASHBOARD" />
+          <MenuItem :icon="BanknotesIcon" name="Transactions" :route="Routes.TRANSACTIONS" />
+          <MenuItem :icon="ArrowLeftCircleIcon" name="Logout" :route="Routes.LOGIN" />
         </nav>
       </header>
     </div>
@@ -69,6 +45,8 @@ import {
   BanknotesIcon,
 } from '@heroicons/vue/24/solid';
 import { ref } from 'vue';
+import MenuItem from './MenuItem.vue';
+import Routes from '../enums/routes';
 
 const isMenuOpen = ref(true);
 const isLoadedOnce = ref(false);
