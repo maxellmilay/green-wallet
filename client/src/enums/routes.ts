@@ -1,4 +1,5 @@
 enum Routes {
+  DEFAULT = '/',
   LOGIN = '/login',
   DASHBOARD = '/dashboard',
   PROFILE = '/profile',

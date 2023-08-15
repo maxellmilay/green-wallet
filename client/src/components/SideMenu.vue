@@ -26,6 +26,13 @@
             <p class="text-lg font-montserrat">Dashboard</p></RouterLink
           >
           <RouterLink
+            to="/transactions"
+            class="flex w-full gap-3 rounded px-8 py-3 text-white hover:bg-site-primary hover:text-black duration-300"
+          >
+            <BanknotesIcon class="h-6 w-6" />
+            <p class="text-lg font-montserrat">Transactions</p></RouterLink
+          >
+          <RouterLink
             to="/login"
             class="flex w-full gap-3 rounded px-8 py-3 text-white hover:bg-site-primary hover:text-black duration-300"
           >
@@ -59,6 +66,7 @@ import {
   UserCircleIcon,
   ComputerDesktopIcon,
   ArrowLeftCircleIcon,
+  BanknotesIcon,
 } from '@heroicons/vue/24/solid';
 import { ref } from 'vue';
 
