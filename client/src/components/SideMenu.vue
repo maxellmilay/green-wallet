@@ -1,9 +1,11 @@
 <template>
-  <aside class="flex">
+  <aside class="flex relative">
     <div
-      class="p-10 border-r border-site-gray duration-500 overflow-hidden relative"
-      :class="{ 'ml-[-17.51rem]': !isMenuOpen, 'display-hidden': isTransitionDone }"
-      @after-enter="setTransitionDone"
+      class="flex py-10 w-[17rem] justify-center border-r border-site-gray overflow-hidden relative"
+      :class="{
+        'animate-menu-close': !isMenuOpen,
+        'animate-menu-open': isMenuOpen && isLoadedOnce,
+      }"
     >
       <header class="flex flex-col items-center">
         <img src="/images/menu-icon.png" alt="Menu" class="p-5 aspect-square h-[10rem]" />
@@ -33,7 +35,14 @@
         </nav>
       </header>
     </div>
-    <div class="flex items-center">
+    <div
+      class="flex absolute h-full items-center"
+      :class="{
+        'animate-toggle-close': !isMenuOpen,
+        'animate-toggle-open': isMenuOpen && isLoadedOnce,
+        'left-[17rem]': !isLoadedOnce,
+      }"
+    >
       <button
         class="py-3 px-1 border-y bg-black hover:bg-zinc-900 duration-200 border-r border-site-gray rounded-r-[0.3rem]"
         @click="closeMenuClick"
@@ -51,24 +60,15 @@ import {
   ComputerDesktopIcon,
   ArrowLeftCircleIcon,
 } from '@heroicons/vue/24/solid';
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
 
 const isMenuOpen = ref(true);
-const isTransitionDone = ref(false);
+const isLoadedOnce = ref(false);
 
 const closeMenuClick = () => {
+  if (!isLoadedOnce.value) {
+    isLoadedOnce.value = true;
+  }
   isMenuOpen.value = !isMenuOpen.value;
 };
-
-const setTransitionDone = () => {
-  isTransitionDone.value = true;
-};
-
-watch(isMenuOpen, (newValue) => console.log(newValue));
 </script>
-
-<style scoped>
-.display-hidden {
-  display: none;
-}
-</style>

@@ -14,13 +14,28 @@ export default {
         montserrat: ['Montserrat', 'sans-serif'],
       },
       keyframes: {
-        sidebar: {
-          '0%': { marginLeft: '0' },
-          '100&': { marginLeft: '-100px' },
+        menuClose: {
+          '0%': { width: '17rem' },
+          '100%': { width: 0 },
+        },
+        menuOpen: {
+          '0%': { width: 0 },
+          '100%': { width: '17rem' },
+        },
+        toggleClose: {
+          '0%': { left: '17rem' },
+          '100%': { left: 0 },
+        },
+        toggleOpen: {
+          '0%': { left: 0 },
+          '100%': { left: '17rem' },
         },
       },
       animation: {
-        'sidebar-toggle': 'sidebar 2s ease 1',
+        'menu-close': 'menuClose 1s forwards',
+        'menu-open': 'menuOpen 1s forwards',
+        'toggle-close': 'toggleClose 1s forwards',
+        'toggle-open': 'toggleOpen 1s forwards',
       },
     },
   },
