@@ -8,9 +8,13 @@
       }"
     >
       <header class="flex flex-col items-center">
-        <img :src="ImagePath.MENU_ICON" alt="Menu" class="p-5 aspect-square h-[10rem]" />
-        <h1 class="text-site-primary text-3xl font-karla mb-7">Green Wallet</h1>
-        <nav class="flex flex-col w-full gap-7">
+        <img
+          :src="ImagePath.MENU_ICON"
+          alt="Menu"
+          class="p-5 aspect-square h-[8rem] md:h-[10rem]"
+        />
+        <h1 class="text-site-primary text-2xl md:text-3xl font-karla mb-7">Green Wallet</h1>
+        <nav class="flex flex-col w-full gap-5 md:gap-7">
           <MenuItem :icon="UserCircleIcon" name="Profile" :route="Routes.PROFILE" />
           <MenuItem :icon="ComputerDesktopIcon" name="Dashboard" :route="Routes.DASHBOARD" />
           <MenuItem :icon="BanknotesIcon" name="Transactions" :route="Routes.TRANSACTIONS" />
