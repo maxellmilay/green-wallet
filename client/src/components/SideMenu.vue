@@ -1,14 +1,14 @@
 <template>
   <aside class="flex fixed z-20 bg-black md:relative h-[100dvh]">
     <div
-      class="flex py-10 w-[17rem] justify-center border-r border-site-gray overflow-hidden relative"
+      class="flex py-10 w-[17rem] h-full justify-center border-r border-site-gray overflow-y-scroll relative"
       :class="{
         'animate-menu-close': !isMenuOpen,
         'animate-menu-open': isMenuOpen && isLoadedOnce,
       }"
     >
       <header class="flex flex-col items-center">
-        <img src="/images/menu-icon.png" alt="Menu" class="p-5 aspect-square h-[10rem]" />
+        <img :src="ImagePath.MENU_ICON" alt="Menu" class="p-5 aspect-square h-[10rem]" />
         <h1 class="text-site-primary text-3xl font-karla mb-7">Green Wallet</h1>
         <nav class="flex flex-col w-full gap-7">
           <MenuItem :icon="UserCircleIcon" name="Profile" :route="Routes.PROFILE" />
@@ -19,7 +19,7 @@
       </header>
     </div>
     <div
-      class="flex absolute h-[100dvh] md:h-full items-center"
+      class="flex absolute h-full items-center"
       :class="{
         'animate-toggle-close': !isMenuOpen,
         'animate-toggle-open': isMenuOpen && isLoadedOnce,
@@ -47,6 +47,7 @@ import {
 import { ref } from 'vue';
 import MenuItem from './MenuItem.vue';
 import Routes from '../enums/routes';
+import ImagePath from '../enums/imagePath';
 
 const isMenuOpen = ref(true);
 const isLoadedOnce = ref(false);
