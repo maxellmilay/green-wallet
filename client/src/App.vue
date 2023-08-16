@@ -20,6 +20,8 @@ const routeClass = computed(() => {
     return 'justify-center h-[100dvh]';
   } else if (pathName.value === Routes.PROFILE) {
     return 'justify-center gap-10 h-[100dvh]';
+  } else if (pathName.value === Routes.TRANSACTIONS) {
+    return 'justify-center h-[100dvh] px-24';
   } else {
     return 'h-full';
   }

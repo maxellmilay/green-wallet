@@ -10,7 +10,7 @@
       <section class="flex flex-col md:h-full md:grow h-[30rem] px-[10%] md:px-0">
         <h3 class="font-karla text-2xl text-center md:text-left mb-5">Transactions</h3>
         <div
-          class="flex flex-col basis-0 pr-5 gap-5 grow overflow-y-scroll scrollbar-thumb-white scrollbar-track-black/70 scrollbar-thin"
+          class="flex flex-col basis-0 pr-5 gap-5 grow overflow-y-auto scrollbar-thumb-white scrollbar-track-black/70 scrollbar-thin"
         >
           <TransactionItem :amount="2500" description="Ruel Allowance" />
           <TransactionItem :amount="-2000" description="Samsung Phone Payment" />

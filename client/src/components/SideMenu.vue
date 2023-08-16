@@ -1,7 +1,7 @@
 <template>
   <aside class="flex fixed z-20 bg-black md:relative h-[100dvh]">
     <div
-      class="flex py-10 w-[17rem] h-full justify-center border-r border-site-gray overflow-y-scroll relative"
+      class="flex py-10 w-[17rem] h-full justify-center border-r border-site-gray overflow-hidden relative"
       :class="{
         'animate-menu-close': !isMenuOpen,
         'animate-menu-open': isMenuOpen && isLoadedOnce,
