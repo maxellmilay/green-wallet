@@ -12,12 +12,12 @@
         <div
           class="flex flex-col basis-0 pr-5 gap-5 grow overflow-y-auto scrollbar-thumb-white scrollbar-track-black/70 scrollbar-thin"
         >
-          <TransactionItem :amount="2500" description="Ruel Allowance" />
-          <TransactionItem :amount="-2000" description="Samsung Phone Payment" />
-          <TransactionItem :amount="2500" description="Ruel Allowance" />
-          <TransactionItem :amount="-2000" description="Samsung Phone Payment" />
-          <TransactionItem :amount="2500" description="Ruel Allowance" />
-          <TransactionItem :amount="-2000" description="Samsung Phone Payment" />
+          <TransactionPreviewItem :amount="2500" description="Ruel Allowance" />
+          <TransactionPreviewItem :amount="-2000" description="Samsung Phone Payment" />
+          <TransactionPreviewItem :amount="2500" description="Ruel Allowance" />
+          <TransactionPreviewItem :amount="-2000" description="Samsung Phone Payment" />
+          <TransactionPreviewItem :amount="2500" description="Ruel Allowance" />
+          <TransactionPreviewItem :amount="-2000" description="Samsung Phone Payment" />
         </div>
       </section>
     </div>
@@ -26,6 +26,6 @@
 
 <script setup lang="ts">
 import { SunIcon, ShoppingCartIcon, CurrencyDollarIcon } from '@heroicons/vue/24/solid';
-import TransactionItem from '../components/TransactionItem.vue';
+import TransactionPreviewItem from '../components/TransactionPreviewItem.vue';
 import SummaryItem from '../components/SummaryItem.vue';
 </script>

@@ -22,14 +22,8 @@
         <div
           class="flex flex-col overflow-y-auto scrollbar-thumb-white scrollbar-track-black/70 scrollbar-thin h-[18rem]"
         >
-          <div class="flex justify-between px-[10%] py-4 border-b border-site-gray">
-            <p>Salary</p>
-            <p class="font-thin text-site-green">+ 2000</p>
-          </div>
-          <div class="flex justify-between px-[10%] py-4 border-b border-site-gray">
-            <p>Salary</p>
-            <p class="font-thin text-site-green">+ 2000</p>
-          </div>
+          <TransactionItem description="Salary" :value="9000" />
+          <TransactionItem description="Mother Allowance" :value="17000" />
         </div>
         <button
           class="flex justify-center items-center py-4 border-t border-site-gray rounded-bl-lg hover:bg-white/10 duration-200"
@@ -46,4 +40,5 @@
 
 <script setup lang="ts">
 import { PlusIcon } from '@heroicons/vue/24/solid';
+import TransactionItem from '../components/TransactionItem.vue';
 </script>
