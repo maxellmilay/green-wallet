@@ -23,7 +23,7 @@
 <script setup lang="ts">
 import TransactionItem from './TransactionItem.vue';
 import { PlusIcon } from '@heroicons/vue/24/solid';
-import mockData from '../views/mockData';
+import mockData from '../mockData';
 import { ref } from 'vue';
 
 const transactionIndex = ref(0);

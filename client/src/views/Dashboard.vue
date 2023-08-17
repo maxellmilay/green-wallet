@@ -27,7 +27,7 @@
 import { SunIcon, ShoppingCartIcon, CurrencyDollarIcon } from '@heroicons/vue/24/solid';
 import TransactionPreviewItem from '../components/TransactionPreviewItem.vue';
 import SummaryItem from '../components/SummaryItem.vue';
-import mockData from './mockData';
+import mockData from '../mockData';
 import { ref } from 'vue';
 
 const transactionIndex = ref(0);

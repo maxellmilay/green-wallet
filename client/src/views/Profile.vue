@@ -12,7 +12,7 @@
 
 <script setup lang="ts">
 import ProfileSummaryItem from '../components/ProfileSummaryItem.vue';
-import mockData from './mockData';
+import mockData from '../mockData';
 
 const { balance, expenses, income } = mockData.user.data;
 </script>

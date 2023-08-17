@@ -2,17 +2,26 @@
   <header :inert="false" class="flex flex-col md:flex-row justify-between items-center w-full mb-5">
     <h2 class="font-karla text-2xl md:text-4xl">Transactions</h2>
     <div class="flex flex-col items-center md:items-end">
-      <p class="font-montserrat text-2xl text-site-green">3000</p>
+      <p class="font-montserrat text-2xl text-site-green">{{ mockData.user.data.balance }}</p>
       <p class="font-karla font-thin text-xs md:text-base">Balance</p>
     </div>
   </header>
   <section :inert="false" class="flex flex-col w-full">
     <div class="flex justify-between">
-      <button
-        class="flex px-4 py-2 border-t-2 border-x-2 border-site-gray rounded-t-lg hover:bg-white/10 duration-200"
-      >
-        <PlusIcon class="h-6 w-6 text-white" />
-      </button>
+      <div class="flex">
+        <button
+          class="flex px-4 py-2 border-t-2 border-x-2 border-site-gray rounded-tl-lg hover:bg-white/10 duration-200"
+        >
+          <PlusIcon class="h-6 w-6 text-white" />
+        </button>
+        <button
+          v-for="transaction in userTransactions"
+          class="py-2 px-4 text-[0.65rem] border-t-2 border-r-2 border-site-gray hover:bg-white/20 duration-200"
+          :class="handleCurrentTransactionCheck(transaction) && 'bg-white/20'"
+        >
+          {{ transaction.name }}
+        </button>
+      </div>
       <div class="flex justify-center gap-4 h-fit">
         <button
           class="border-2 text-xs text-white border-white rounded-lg px-4 py-2 bg-black hover:bg-white/10 duration-200"
@@ -43,8 +52,13 @@ import Influx from '../components/Influx.vue';
 import Outflux from '../components/Outflux.vue';
 import AddTransactionModal from '../components/AddTransactionModal.vue';
 import { ref } from 'vue';
+import mockData from '../mockData';
+import { TTransaction } from '../types/TTransaction';
 
 const isTransactionModalOpen = ref(false);
+const transactionIndex = ref(0);
+
+const userTransactions = mockData.user.data.transactions;
 
 const openTransactionModal = () => {
   isTransactionModalOpen.value = true;
@@ -52,5 +66,16 @@ const openTransactionModal = () => {
 
 const closeTransactionModal = () => {
   isTransactionModalOpen.value = false;
+};
+
+const handleCurrentTransactionCheck = (transaction: TTransaction) => {
+  if (!transaction.name || !userTransactions[transactionIndex.value]) {
+    return false;
+  }
+  if (transaction.name === userTransactions[transactionIndex.value].name) {
+    return true;
+  } else {
+    return false;
+  }
 };
 </script>

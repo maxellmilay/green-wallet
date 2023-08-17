@@ -8,6 +8,7 @@ export default {
       income: 5500,
       transactions: [
         {
+          name: 'August Budget',
           influx: [
             {
               id: 36473629,
