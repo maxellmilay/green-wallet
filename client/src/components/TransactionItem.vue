@@ -11,13 +11,19 @@
 </template>
 <script setup lang="ts">
 import { computed, ref } from 'vue';
+import { TTransactionPayload } from '../types/TTransaction';
 
 const isPositive = ref();
 const { description, value } = defineProps({ description: String, value: Number });
-const emit = defineEmits<{ openTransactionItemModal: [type: string] }>();
+const emit = defineEmits<{
+  openTransactionItemModal: [data: TTransactionPayload];
+}>();
 
 const openTransactionItemModal = () => {
-  emit('openTransactionItemModal', 'Update');
+  if (!description || !value) {
+    return;
+  }
+  emit('openTransactionItemModal', { type: 'Update', description, value });
 };
 
 const valueSign = computed(() => {

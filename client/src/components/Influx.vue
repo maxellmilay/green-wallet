@@ -9,13 +9,13 @@
       <TransactionItem
         :description="transaction.name"
         :value="transaction.value"
-        @open-transaction-item-modal="(type) => openTransactionItemModal(type)"
+        @open-transaction-item-modal="(payload) => openTransactionItemModal(payload)"
         v-for="transaction in influx"
       />
     </div>
     <button
       class="flex justify-center items-center py-4 border-t border-site-gray rounded-bl-lg hover:bg-white/10 duration-200"
-      @click="openTransactionItemModal('Add')"
+      @click="openTransactionItemModal({ type: 'Add', description: '', value: 0 })"
     >
       <PlusIcon class="h-6 w-6" />
     </button>
@@ -26,6 +26,7 @@ import TransactionItem from './TransactionItem.vue';
 import { PlusIcon } from '@heroicons/vue/24/solid';
 import mockData from '../mockData';
 import { ref } from 'vue';
+import { TTransactionPayload } from '../types/TTransaction';
 
 const transactionIndex = ref(0);
 
@@ -33,7 +34,7 @@ const { influx } = mockData.user.data.transactions[transactionIndex.value];
 
 const emit = defineEmits(['openTransactionItemModal']);
 
-const openTransactionItemModal = (type: string) => {
-  emit('openTransactionItemModal', type);
+const openTransactionItemModal = (payload: TTransactionPayload) => {
+  emit('openTransactionItemModal', payload);
 };
 </script>

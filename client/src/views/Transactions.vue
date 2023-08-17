@@ -36,14 +36,14 @@
       </div>
     </div>
     <div class="flex flex-col md:flex-row font-montserrat mb-5">
-      <Influx @open-transaction-item-modal="(type) => openTransactionItemModal(type)" />
+      <Influx @open-transaction-item-modal="(payload) => openTransactionItemModal(payload)" />
       <Outflux />
     </div>
   </section>
   <TransactionItemModal
     :isTransactionModalOpen="isTransactionItemModalOpen"
     @close-transaction-item-modal="closeTransactionItemModal"
-    :type="transactionType"
+    :payload="transactionPayload"
   />
 </template>
 
@@ -52,20 +52,23 @@ import { PlusIcon } from '@heroicons/vue/24/solid';
 import Influx from '../components/Influx.vue';
 import Outflux from '../components/Outflux.vue';
 import TransactionItemModal from '../components/modals/TransactionItemModal.vue';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import mockData from '../mockData';
-import { TTransaction } from '../types/TTransaction';
+import { TTransaction, TTransactionPayload } from '../types/TTransaction';
 
 const isTransactionItemModalOpen = ref(false);
 const transactionIndex = ref(0);
-const transactionType = ref('add');
+const transactionPayload = ref({} as TTransactionPayload);
 
 const userTransactions = mockData.user.data.transactions;
 
-const openTransactionItemModal = (type: string) => {
-  transactionType.value = type;
+const openTransactionItemModal = (payload: TTransactionPayload) => {
+  console.log('MAIN FUNCTION', payload.description, payload.value);
+  transactionPayload.value = payload;
   isTransactionItemModalOpen.value = true;
 };
+
+console.log('MAIN', transactionPayload.value.description, transactionPayload.value.value);
 
 const closeTransactionItemModal = () => {
   isTransactionItemModalOpen.value = false;
@@ -81,4 +84,6 @@ const handleCurrentTransactionCheck = (transaction: TTransaction) => {
     return false;
   }
 };
+
+onMounted(() => {});
 </script>
