@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-between px-[10%] py-4 border-b border-site-gray">
+  <div class="flex justify-between px-[10%] py-4 border-b border-site-gray text-xs md:text-base">
     <p>{{ description }}</p>
     <p class="font-thin" :class="isPositive ? 'text-site-green' : 'text-site-red'">
       {{ valueSign }} {{ value && Math.abs(value) }}

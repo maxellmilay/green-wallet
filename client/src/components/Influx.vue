@@ -1,8 +1,10 @@
 <template>
-  <div class="flex flex-col w-1/2 border-site-gray border-y-2 border-l-2 border-r rounded-bl-lg">
+  <div
+    class="flex flex-col md:w-1/2 mb-5 md:mb-0 border-site-gray border-2 md:border-y-2 md:border-l-2 md:border-r rounded-lg md:rounded-bl-lg"
+  >
     <h3 class="text-center py-7 border-b-2 border-site-gray">Influx</h3>
     <div
-      class="flex flex-col overflow-y-auto scrollbar-thumb-white scrollbar-track-black/70 scrollbar-thin h-[18rem]"
+      class="flex flex-col overflow-y-auto scrollbar-thumb-white scrollbar-track-white/10 scrollbar-thin h-[18rem]"
     >
       <TransactionItem description="Salary" :value="5500" />
       <TransactionItem description="Salary" :value="5500" />
