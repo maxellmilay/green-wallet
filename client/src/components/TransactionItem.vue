@@ -1,10 +1,12 @@
 <template>
-  <div class="flex justify-between px-[10%] py-4 border-b border-site-gray text-xs md:text-base">
+  <button
+    class="flex justify-between px-[10%] py-4 border-b border-site-gray text-xs md:text-base hover:bg-white/10 duration-200"
+  >
     <p>{{ description }}</p>
     <p class="font-thin" :class="isPositive ? 'text-site-green' : 'text-site-red'">
       {{ valueSign }} {{ value && Math.abs(value) }}
     </p>
-  </div>
+  </button>
 </template>
 <script setup lang="ts">
 import { computed, ref } from 'vue';

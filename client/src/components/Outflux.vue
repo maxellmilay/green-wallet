@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex flex-col md:w-1/2 border-site-gray border-2 md:border-y-2 md:border-l-2 md:border-r rounded-lg md:rounded-r-lg"
+    class="flex flex-col md:w-1/2 border-site-gray border-2 md:border-l rounded-lg md:rounded-r-lg md:rounded-l-none"
   >
     <h3 class="text-center py-7 border-b-2 border-site-gray">Outflux</h3>
     <div

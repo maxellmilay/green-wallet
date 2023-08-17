@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex flex-col md:w-1/2 mb-5 md:mb-0 border-site-gray border-2 md:border-y-2 md:border-l-2 md:border-r rounded-lg md:rounded-bl-lg"
+    class="flex flex-col md:w-1/2 mb-5 md:mb-0 border-site-gray border-2 md:border-r rounded-lg md:rounded-bl-lg md:rounded-r-none md:rounded-tl-none"
   >
     <h3 class="text-center py-7 border-b-2 border-site-gray">Influx</h3>
     <div
