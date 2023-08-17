@@ -5,6 +5,7 @@ export default {
     extend: {
       screens: {
         lg: '950px',
+        
       },
       colors: {
         'site-primary': '#00EFC5',
