@@ -1,7 +1,7 @@
 <template>
   <button
     class="flex justify-between px-[10%] py-4 border-b border-site-gray text-xs md:text-base hover:bg-white/10 duration-200"
-    @click="openTransactionModal"
+    @click="openTransactionItemModal"
   >
     <p>{{ description }}</p>
     <p class="font-thin" :class="isPositive ? 'text-site-green' : 'text-site-red'">
@@ -13,11 +13,11 @@
 import { computed, ref } from 'vue';
 
 const isPositive = ref();
-const emit = defineEmits(['openTransactionModal']);
 const { description, value } = defineProps({ description: String, value: Number });
+const emit = defineEmits<{ openTransactionItemModal: [type: string] }>();
 
-const openTransactionModal = () => {
-  emit('openTransactionModal');
+const openTransactionItemModal = () => {
+  emit('openTransactionItemModal', 'Update');
 };
 
 const valueSign = computed(() => {

@@ -6,11 +6,13 @@
     <div class="w-[25rem] lg:w-[35rem]">
       <div class="mx-5 p-5 md:p-10 bg-black rounded-lg border">
         <div class="flex w-full justify-end">
-          <button class="bg-site-red text-black rounded-full" @click="closeTransactionModal">
+          <button class="bg-site-red text-black rounded-full" @click="closeTransactionItemModal">
             <XMarkIcon class="h-6 w-6 p-1" />
           </button>
         </div>
-        <h3 class="text-center font-karla text-lg md:text-2xl mb-4 md:mb-7">Add Transaction</h3>
+        <h3 class="text-center font-karla text-lg md:text-2xl mb-4 md:mb-7">
+          {{ type && type }} Transaction
+        </h3>
         <div class="flex gap-5 items-center mb-3 md:mb-5 text-[0.5rem] md:text-xs lg-text-base">
           <label for="transaction-name" class="grow font-montserrat text-right"
             >Transaction Name</label
@@ -29,11 +31,17 @@
             class="w-[55%] lg:w-[60%] bg-black border border-site-gray rounded px-3 py-2 md:p-4"
           />
         </div>
-        <div class="flex justify-end text-xs">
+        <div class="flex justify-end text-xs gap-3">
+          <button
+            class="text-site-red border border-site-red hover:bg-site-green/20 px-4 py-2 rounded"
+            v-if="type === 'Update'"
+          >
+            {{ type && type }}
+          </button>
           <button
             class="text-site-green border border-site-green hover:bg-site-green/20 px-4 py-2 rounded"
           >
-            Add
+            {{ type && type }}
           </button>
         </div>
       </div>
@@ -43,13 +51,14 @@
 <script setup lang="ts">
 import { XMarkIcon } from '@heroicons/vue/24/solid';
 
-const { isTransactionModalOpen } = defineProps({
+const { isTransactionModalOpen, type } = defineProps({
   isTransactionModalOpen: Boolean,
+  type: String,
 });
 
-const emit = defineEmits(['closeTransactionModal']);
+const emit = defineEmits(['closeTransactionItemModal']);
 
-const closeTransactionModal = () => {
-  emit('closeTransactionModal');
+const closeTransactionItemModal = () => {
+  emit('closeTransactionItemModal');
 };
 </script>

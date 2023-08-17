@@ -36,13 +36,14 @@
       </div>
     </div>
     <div class="flex flex-col md:flex-row font-montserrat mb-5">
-      <Influx @open-transaction-modal="openTransactionModal" />
+      <Influx @open-transaction-item-modal="(type) => openTransactionItemModal(type)" />
       <Outflux />
     </div>
   </section>
-  <AddTransactionModal
-    :isTransactionModalOpen="isTransactionModalOpen"
-    @close-transaction-modal="closeTransactionModal"
+  <TransactionItemModal
+    :isTransactionModalOpen="isTransactionItemModalOpen"
+    @close-transaction-item-modal="closeTransactionItemModal"
+    :type="transactionType"
   />
 </template>
 
@@ -50,22 +51,24 @@
 import { PlusIcon } from '@heroicons/vue/24/solid';
 import Influx from '../components/Influx.vue';
 import Outflux from '../components/Outflux.vue';
-import AddTransactionModal from '../components/AddTransactionModal.vue';
+import TransactionItemModal from '../components/modals/TransactionItemModal.vue';
 import { ref } from 'vue';
 import mockData from '../mockData';
 import { TTransaction } from '../types/TTransaction';
 
-const isTransactionModalOpen = ref(false);
+const isTransactionItemModalOpen = ref(false);
 const transactionIndex = ref(0);
+const transactionType = ref('add');
 
 const userTransactions = mockData.user.data.transactions;
 
-const openTransactionModal = () => {
-  isTransactionModalOpen.value = true;
+const openTransactionItemModal = (type: string) => {
+  transactionType.value = type;
+  isTransactionItemModalOpen.value = true;
 };
 
-const closeTransactionModal = () => {
-  isTransactionModalOpen.value = false;
+const closeTransactionItemModal = () => {
+  isTransactionItemModalOpen.value = false;
 };
 
 const handleCurrentTransactionCheck = (transaction: TTransaction) => {

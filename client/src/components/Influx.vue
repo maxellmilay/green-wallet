@@ -9,12 +9,13 @@
       <TransactionItem
         :description="transaction.name"
         :value="transaction.value"
-        @open-transaction-modal="openTransactionModal"
+        @open-transaction-item-modal="(type) => openTransactionItemModal(type)"
         v-for="transaction in influx"
       />
     </div>
     <button
       class="flex justify-center items-center py-4 border-t border-site-gray rounded-bl-lg hover:bg-white/10 duration-200"
+      @click="openTransactionItemModal('Add')"
     >
       <PlusIcon class="h-6 w-6" />
     </button>
@@ -30,9 +31,9 @@ const transactionIndex = ref(0);
 
 const { influx } = mockData.user.data.transactions[transactionIndex.value];
 
-const emit = defineEmits(['openTransactionModal']);
+const emit = defineEmits(['openTransactionItemModal']);
 
-const openTransactionModal = () => {
-  emit('openTransactionModal');
+const openTransactionItemModal = (type: string) => {
+  emit('openTransactionItemModal', type);
 };
 </script>
