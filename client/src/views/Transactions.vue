@@ -13,7 +13,7 @@
       >
         <PlusIcon class="h-6 w-6 text-white" />
       </button>
-      <div class="flex justify-center gap-1 h-fit">
+      <div class="flex justify-center gap-4 h-fit">
         <button
           class="border-2 text-xs text-white border-white rounded-lg px-4 py-2 bg-black hover:bg-white/10 duration-200"
         >
@@ -44,7 +44,7 @@ import Outflux from '../components/Outflux.vue';
 import AddTransactionModal from '../components/AddTransactionModal.vue';
 import { ref } from 'vue';
 
-const isTransactionModalOpen = ref(true);
+const isTransactionModalOpen = ref(false);
 
 const openTransactionModal = () => {
   isTransactionModalOpen.value = true;

@@ -4,12 +4,15 @@
   ></div>
   <h2 class="font-karla text-3xl">Maxell Milay</h2>
   <section class="flex flex-col gap-5">
-    <ProfileSummaryItem name="Balance" :value="3000" />
-    <ProfileSummaryItem name="Expenses" :value="2500" />
-    <ProfileSummaryItem name="Income" :value="5500" />
+    <ProfileSummaryItem name="Balance" :value="balance" />
+    <ProfileSummaryItem name="Expenses" :value="expenses" />
+    <ProfileSummaryItem name="Income" :value="income" />
   </section>
 </template>
 
 <script setup lang="ts">
 import ProfileSummaryItem from '../components/ProfileSummaryItem.vue';
+import mockData from './mockData';
+
+const { balance, expenses, income } = mockData.user.data;
 </script>

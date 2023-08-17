@@ -7,17 +7,11 @@
       class="flex flex-col overflow-y-auto scrollbar-thumb-white scrollbar-track-white/10 scrollbar-thin h-[18rem]"
     >
       <TransactionItem
-        description="Salary"
-        :value="5500"
+        :description="transaction.name"
+        :value="transaction.value"
         @open-transaction-modal="openTransactionModal"
+        v-for="transaction in influx"
       />
-      <TransactionItem description="Salary" :value="5500" />
-      <TransactionItem description="Salary" :value="5500" />
-      <TransactionItem description="Salary" :value="5500" />
-      <TransactionItem description="Salary" :value="5500" />
-      <TransactionItem description="Salary" :value="5500" />
-      <TransactionItem description="Salary" :value="5500" />
-      <TransactionItem description="Salary" :value="5500" />
     </div>
     <button
       class="flex justify-center items-center py-4 border-t border-site-gray rounded-bl-lg hover:bg-white/10 duration-200"
@@ -29,6 +23,12 @@
 <script setup lang="ts">
 import TransactionItem from './TransactionItem.vue';
 import { PlusIcon } from '@heroicons/vue/24/solid';
+import mockData from '../views/mockData';
+import { ref } from 'vue';
+
+const transactionIndex = ref(0);
+
+const { influx } = mockData.user.data.transactions[transactionIndex.value];
 
 const emit = defineEmits(['openTransactionModal']);
 

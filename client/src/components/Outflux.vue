@@ -6,14 +6,11 @@
     <div
       class="flex flex-col overflow-y-auto scrollbar-thumb-white scrollbar-track-white/10 scrollbar-thin h-[18rem]"
     >
-      <TransactionItem description="Internet" :value="-500" />
-      <TransactionItem description="Food" :value="-1000" />
-      <TransactionItem description="Transportation" :value="-250" />
-      <TransactionItem description="Misc" :value="-750" />
-      <TransactionItem description="Internet" :value="-500" />
-      <TransactionItem description="Food" :value="-1000" />
-      <TransactionItem description="Transportation" :value="-250" />
-      <TransactionItem description="Misc" :value="-750" />
+      <TransactionItem
+        :description="transaction.name"
+        :value="transaction.value"
+        v-for="transaction in outflux"
+      />
     </div>
     <button
       class="flex justify-center items-center py-4 border-t border-site-gray rounded-br-lg hover:bg-white/10 duration-200"
@@ -25,4 +22,10 @@
 <script setup lang="ts">
 import { PlusIcon } from '@heroicons/vue/24/solid';
 import TransactionItem from './TransactionItem.vue';
+import mockData from '../views/mockData';
+import { ref } from 'vue';
+
+const transactionIndex = ref(0);
+
+const { outflux } = mockData.user.data.transactions[transactionIndex.value];
 </script>
