@@ -2,7 +2,7 @@
   <div class="flex justify-between px-[10%] py-4 border-b border-site-gray">
     <p>{{ description }}</p>
     <p class="font-thin" :class="isPositive ? 'text-site-green' : 'text-site-red'">
-      {{ valueSign }} {{ value }}
+      {{ valueSign }} {{ value && Math.abs(value) }}
     </p>
   </div>
 </template>

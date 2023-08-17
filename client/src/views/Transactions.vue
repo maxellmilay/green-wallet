@@ -14,31 +14,27 @@
         <PlusIcon class="h-6 w-6 text-white" />
       </button>
     </div>
-    <div class="flex font-montserrat">
-      <div
-        class="flex flex-col w-1/2 border-site-gray border-y-2 border-l-2 border-r rounded-bl-lg"
+    <div class="flex font-montserrat mb-5">
+      <Influx />
+      <Outflux />
+    </div>
+    <div class="flex justify-center gap-8">
+      <button
+        class="border-2 text-white border-white rounded-lg px-6 py-3 bg-black hover:bg-white/10 duration-200"
       >
-        <h3 class="text-center py-7 border-b-2 border-site-gray">Influx</h3>
-        <div
-          class="flex flex-col overflow-y-auto scrollbar-thumb-white scrollbar-track-black/70 scrollbar-thin h-[18rem]"
-        >
-          <TransactionItem description="Salary" :value="9000" />
-          <TransactionItem description="Mother Allowance" :value="17000" />
-        </div>
-        <button
-          class="flex justify-center items-center py-4 border-t border-site-gray rounded-bl-lg hover:bg-white/10 duration-200"
-        >
-          <PlusIcon class="h-6 w-6" />
-        </button>
-      </div>
-      <div class="flex flex-col w-1/2 border-site-gray border-y-2 border-r-2 border-l rounded-r-lg">
-        <h3 class="text-center py-7 border-b-2 border-site-gray">Outflux</h3>
-      </div>
+        Export
+      </button>
+      <button
+        class="border-2 text-site-red border-site-red rounded-lg px-6 py-3 bg-black hover:bg-site-red/20 hover:text-white duration-200"
+      >
+        Reset
+      </button>
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
 import { PlusIcon } from '@heroicons/vue/24/solid';
-import TransactionItem from '../components/TransactionItem.vue';
+import Influx from '../components/Influx.vue';
+import Outflux from '../components/Outflux.vue';
 </script>
