@@ -58,7 +58,7 @@ import { TTransaction, TTransactionPayload } from '../types/TTransaction';
 
 const isTransactionItemModalOpen = ref(false);
 const transactionIndex = ref(0);
-const transactionPayload = ref({ type: 'Empty', description: 'empty', value: 0 });
+const transactionPayload = ref({} as TTransactionPayload);
 
 const userTransactions = mockData.user.data.transactions;
 

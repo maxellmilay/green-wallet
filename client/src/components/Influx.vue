@@ -15,7 +15,7 @@
     </div>
     <button
       class="flex justify-center items-center py-4 border-t border-site-gray rounded-bl-lg hover:bg-white/10 duration-200"
-      @click="openTransactionItemModal({ type: 'Add', description: '', value: 0 })"
+      @click="openTransactionItemModal({ type: 'Add' } as TTransactionPayload)"
     >
       <PlusIcon class="h-6 w-6" />
     </button>
