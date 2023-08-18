@@ -44,7 +44,7 @@
     <div class="flex flex-col md:flex-row font-montserrat mb-5">
       <Influx
         @open-transaction-item-modal="(payload) => openTransactionItemModal(payload)"
-        :currentTransaction="currentTransaction"
+        :currentInflux="currentTransaction.influx"
       />
       <Outflux />
     </div>
@@ -71,29 +71,31 @@ import Influx from '../components/Influx.vue';
 import Outflux from '../components/Outflux.vue';
 import TransactionItemModal from '../components/modals/TransactionItemModal.vue';
 import TransactionModal from '../components/modals/TransactionModal.vue';
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
 import mockData from '../mockData';
 import { TTransaction, TItemPayload, TTransactionPayload } from '../types/TTransaction';
 import { useToast } from 'vue-toast-notification';
+import { defaultModalType, defaultTransactionIndex } from '../constants/defaults';
+import Types from '../enums/types';
 
 const userTransactions = mockData.user.data.transactions;
 
 const toast = useToast();
 
 const isModalOpen = ref(false);
-const modalType = ref('');
-const currentTransaction = ref(userTransactions[0]);
+const modalType = ref(defaultModalType);
+const currentTransaction = ref(userTransactions[defaultTransactionIndex]);
 const itemPayload = ref({} as TItemPayload);
 const transactionPayload = ref({} as TTransactionPayload);
 
 const openTransactionItemModal = (payload: TItemPayload) => {
-  modalType.value = 'item';
+  modalType.value = Types.ITEM;
   itemPayload.value = payload;
   isModalOpen.value = true;
 };
 
 const openTransactionModal = (payload: TTransactionPayload) => {
-  modalType.value = 'transaction';
+  modalType.value = Types.TRANSACTION;
   transactionPayload.value = payload;
   isModalOpen.value = true;
 };

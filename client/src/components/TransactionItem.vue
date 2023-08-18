@@ -18,6 +18,9 @@ const { description, value } = defineProps({
   description: { type: String, required: true },
   value: { type: Number, required: true },
 });
+
+console.log('ITEM', description, value);
+
 const emit = defineEmits<{
   openTransactionItemModal: [data: TItemPayload];
 }>();
