@@ -12,7 +12,7 @@ export type TTransaction = {
 };
 
 export type TTransactionPayload = {
-  type: String;
-  description?: String;
-  value?: Number;
+  type: string;
+  description: string;
+  value: number;
 };

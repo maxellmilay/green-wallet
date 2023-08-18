@@ -2,6 +2,7 @@
   <div
     v-if="isTransactionModalOpen"
     class="flex h-[100dvh] w-full justify-center items-center top-0 bg-black/80 fixed md:absolute"
+    :key="payload.type.toString()"
   >
     <div class="w-[25rem] lg:w-[35rem]">
       <div class="mx-5 p-5 md:p-10 bg-black rounded-lg border">
@@ -21,7 +22,8 @@
             id="transaction-name"
             type="text"
             class="w-[55%] lg:w-[60%] bg-black border border-site-gray rounded px-3 py-2 md:p-4"
-            v-model="name"
+            v-model="payload.description"
+            key="Name"
           />
         </div>
         <div class="flex gap-5 items-center mb-5 md:mb-10 text-[0.5rem] md:text-xs lg-text-base">
@@ -30,7 +32,8 @@
             id="transaction-amount"
             type="text"
             class="w-[55%] lg:w-[60%] bg-black border border-site-gray rounded px-3 py-2 md:p-4"
-            v-model="amount"
+            v-model="payload.value"
+            key="Amount"
           />
         </div>
         <div class="flex justify-end text-xs gap-3">
@@ -53,17 +56,11 @@
 <script setup lang="ts">
 import { XMarkIcon } from '@heroicons/vue/24/solid';
 import { TTransactionPayload } from '../../types/TTransaction';
-import { ref } from 'vue';
 
 const { isTransactionModalOpen, payload } = defineProps({
   isTransactionModalOpen: Boolean,
   payload: { type: Object as () => TTransactionPayload, required: true },
 });
-
-const name = ref(payload.description);
-const amount = ref(payload.value);
-
-console.log('MODAL', name.value, amount.value);
 
 const emit = defineEmits(['closeTransactionItemModal']);
 

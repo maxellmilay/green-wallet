@@ -7,7 +7,7 @@
     </div>
   </header>
   <section :inert="false" class="flex flex-col w-full">
-    <div class="flex justify-between">
+    <div class="flex flex-col-reverse md:flex-row justify-between">
       <div class="flex">
         <button
           class="flex px-4 py-2 border-t-2 border-x-2 border-site-gray rounded-tl-lg hover:bg-white/10 duration-200"
@@ -22,7 +22,7 @@
           {{ transaction.name }}
         </button>
       </div>
-      <div class="flex justify-center gap-4 h-fit">
+      <div class="flex justify-end md:justify-center gap-4 h-fit">
         <button
           class="border-2 text-xs text-white border-white rounded-lg px-4 py-2 bg-black hover:bg-white/10 duration-200"
         >
@@ -58,17 +58,14 @@ import { TTransaction, TTransactionPayload } from '../types/TTransaction';
 
 const isTransactionItemModalOpen = ref(false);
 const transactionIndex = ref(0);
-const transactionPayload = ref({} as TTransactionPayload);
+const transactionPayload = ref({ type: 'Empty', description: 'empty', value: 0 });
 
 const userTransactions = mockData.user.data.transactions;
 
 const openTransactionItemModal = (payload: TTransactionPayload) => {
-  console.log('MAIN FUNCTION', payload.description, payload.value);
   transactionPayload.value = payload;
   isTransactionItemModalOpen.value = true;
 };
-
-console.log('MAIN', transactionPayload.value.description, transactionPayload.value.value);
 
 const closeTransactionItemModal = () => {
   isTransactionItemModalOpen.value = false;
