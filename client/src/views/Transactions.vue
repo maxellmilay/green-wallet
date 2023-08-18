@@ -21,27 +21,31 @@
         <button
           v-for="transaction in userTransactions"
           class="py-2 px-4 text-[0.65rem] border-t-2 border-r-2 border-site-gray hover:bg-white/20 duration-200"
-          :class="handleCurrentTransactionCheck(transaction) && 'bg-white/20'"
-          @click="openTransactionModal({ type: 'Update', name: transaction.name })"
+          :class="handleCurrentTransactionCheck(transaction) ? 'bg-white/20' : 'bg-black'"
+          @click="handleTransactionClick(transaction)"
         >
           {{ transaction.name }}
         </button>
       </div>
       <div class="flex justify-end md:justify-center gap-4 h-fit">
         <button
-          class="border-2 text-xs text-white border-white rounded-lg px-4 py-2 bg-black hover:bg-white/10 duration-200"
+          class="border-2 text-xs text-blue-300 border-blue-300 rounded-lg px-4 py-2 bg-black hover:bg-white/10 duration-200"
         >
           Export
         </button>
         <button
-          class="border-2 text-xs text-site-red border-site-red rounded-lg px-4 py-2 bg-black hover:bg-site-red/20 hover:text-white duration-200"
+          class="border-2 text-xs text-white border-white rounded-lg px-4 py-2 bg-black hover:bg-site-red/20 hover:text-white duration-200"
+          @click="openTransactionModal({ type: 'Update', name: currentTransaction.name })"
         >
-          Reset
+          Edit
         </button>
       </div>
     </div>
     <div class="flex flex-col md:flex-row font-montserrat mb-5">
-      <Influx @open-transaction-item-modal="(payload) => openTransactionItemModal(payload)" />
+      <Influx
+        @open-transaction-item-modal="(payload) => openTransactionItemModal(payload)"
+        :currentTransaction="currentTransaction"
+      />
       <Outflux />
     </div>
   </section>
@@ -67,20 +71,20 @@ import Influx from '../components/Influx.vue';
 import Outflux from '../components/Outflux.vue';
 import TransactionItemModal from '../components/modals/TransactionItemModal.vue';
 import TransactionModal from '../components/modals/TransactionModal.vue';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import mockData from '../mockData';
 import { TTransaction, TItemPayload, TTransactionPayload } from '../types/TTransaction';
 import { useToast } from 'vue-toast-notification';
+
+const userTransactions = mockData.user.data.transactions;
 
 const toast = useToast();
 
 const isModalOpen = ref(false);
 const modalType = ref('');
-const transactionIndex = ref(0);
+const currentTransaction = ref(userTransactions[0]);
 const itemPayload = ref({} as TItemPayload);
 const transactionPayload = ref({} as TTransactionPayload);
-
-const userTransactions = mockData.user.data.transactions;
 
 const openTransactionItemModal = (payload: TItemPayload) => {
   modalType.value = 'item';
@@ -119,13 +123,17 @@ const deleteTransaction = () => {
 };
 
 const handleCurrentTransactionCheck = (transaction: TTransaction) => {
-  if (!transaction.name || !userTransactions[transactionIndex.value]) {
+  if (!transaction.name || !currentTransaction) {
     return false;
   }
-  if (transaction.name === userTransactions[transactionIndex.value].name) {
+  if (transaction.name === currentTransaction.value.name) {
     return true;
   } else {
     return false;
   }
+};
+
+const handleTransactionClick = (transaction: TTransaction) => {
+  currentTransaction.value = transaction;
 };
 </script>

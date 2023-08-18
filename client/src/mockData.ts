@@ -44,6 +44,18 @@ export default {
             },
           ],
         },
+        {
+          name: 'September Budget',
+          influx: [
+            {
+              id: 36473629,
+              createdAt: new Date(2023, 8, 18, 9, 23),
+              name: 'Allowance',
+              value: 17000,
+            },
+          ],
+          outflux: [],
+        },
       ],
     },
   },

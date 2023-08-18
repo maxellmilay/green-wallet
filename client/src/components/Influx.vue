@@ -10,7 +10,7 @@
         :description="transaction.name"
         :value="transaction.value"
         @open-transaction-item-modal="(payload) => openTransactionItemModal(payload)"
-        v-for="transaction in influx"
+        v-for="transaction in currentTransaction.influx"
       />
     </div>
     <button
@@ -25,12 +25,12 @@
 import TransactionItem from './TransactionItem.vue';
 import { PlusIcon } from '@heroicons/vue/24/solid';
 import mockData from '../mockData';
-import { ref } from 'vue';
-import { TItemPayload } from '../types/TTransaction';
+import { TItemPayload, TTransaction, TTransactionItem } from '../types/TTransaction';
+import { watch } from 'vue';
 
-const transactionIndex = ref(0);
-
-const { influx } = mockData.user.data.transactions[transactionIndex.value];
+const { currentTransaction } = defineProps({
+  currentTransaction: { type: Object as () => TTransaction, required: true },
+});
 
 const emit = defineEmits(['openTransactionItemModal']);
 

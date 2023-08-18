@@ -5,7 +5,7 @@
   >
     <p>{{ description }}</p>
     <p class="font-thin" :class="isPositive ? 'text-site-green' : 'text-site-red'">
-      {{ valueSign }} {{ value && Math.abs(value) }}
+      {{ valueSign }} {{ Math.abs(value) }}
     </p>
   </button>
 </template>
@@ -14,22 +14,19 @@ import { computed, ref } from 'vue';
 import { TItemPayload } from '../types/TTransaction';
 
 const isPositive = ref();
-const { description, value } = defineProps({ description: String, value: Number });
+const { description, value } = defineProps({
+  description: { type: String, required: true },
+  value: { type: Number, required: true },
+});
 const emit = defineEmits<{
   openTransactionItemModal: [data: TItemPayload];
 }>();
 
 const openTransactionItemModal = () => {
-  if (!description || !value) {
-    return;
-  }
   emit('openTransactionItemModal', { type: 'Update', description, value });
 };
 
 const valueSign = computed(() => {
-  if (!value) {
-    return;
-  }
   if (value >= 0) {
     isPositive.value = true;
     return '+';
