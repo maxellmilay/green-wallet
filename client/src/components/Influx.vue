@@ -15,7 +15,7 @@
     </div>
     <button
       class="flex justify-center items-center py-4 border-t border-site-gray rounded-bl-lg hover:bg-white/10 duration-200"
-      @click="openTransactionItemModal({ type: 'Add' } as TTransactionPayload)"
+      @click="openTransactionItemModal({ type: 'Add' } as TItemPayload)"
     >
       <PlusIcon class="h-6 w-6" />
     </button>
@@ -26,7 +26,7 @@ import TransactionItem from './TransactionItem.vue';
 import { PlusIcon } from '@heroicons/vue/24/solid';
 import mockData from '../mockData';
 import { ref } from 'vue';
-import { TTransactionPayload } from '../types/TTransaction';
+import { TItemPayload } from '../types/TTransaction';
 
 const transactionIndex = ref(0);
 
@@ -34,7 +34,7 @@ const { influx } = mockData.user.data.transactions[transactionIndex.value];
 
 const emit = defineEmits(['openTransactionItemModal']);
 
-const openTransactionItemModal = (payload: TTransactionPayload) => {
+const openTransactionItemModal = (payload: TItemPayload) => {
   emit('openTransactionItemModal', payload);
 };
 </script>

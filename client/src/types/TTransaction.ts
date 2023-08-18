@@ -11,8 +11,13 @@ export type TTransaction = {
   outflux: TTransactionItem[];
 };
 
-export type TTransactionPayload = {
+export type TItemPayload = {
   type: string;
   description: string;
   value: number;
+};
+
+export type TTransactionPayload = {
+  type: string;
+  name: string;
 };

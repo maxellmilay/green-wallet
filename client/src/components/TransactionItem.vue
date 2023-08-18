@@ -11,12 +11,12 @@
 </template>
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { TTransactionPayload } from '../types/TTransaction';
+import { TItemPayload } from '../types/TTransaction';
 
 const isPositive = ref();
 const { description, value } = defineProps({ description: String, value: Number });
 const emit = defineEmits<{
-  openTransactionItemModal: [data: TTransactionPayload];
+  openTransactionItemModal: [data: TItemPayload];
 }>();
 
 const openTransactionItemModal = () => {

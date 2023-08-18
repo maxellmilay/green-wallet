@@ -1,16 +1,20 @@
 <template>
-  <header :inert="false" class="flex flex-col md:flex-row justify-between items-center w-full mb-5">
+  <header
+    :inert="isModalOpen"
+    class="flex flex-col md:flex-row justify-between items-center w-full mb-5"
+  >
     <h2 class="font-karla text-2xl md:text-4xl">Transactions</h2>
     <div class="flex flex-col items-center md:items-end">
       <p class="font-montserrat text-2xl text-site-green">{{ mockData.user.data.balance }}</p>
       <p class="font-karla font-thin text-xs md:text-base">Balance</p>
     </div>
   </header>
-  <section :inert="false" class="flex flex-col w-full">
+  <section :inert="isModalOpen" class="flex flex-col w-full">
     <div class="flex flex-col-reverse md:flex-row justify-between">
       <div class="flex">
         <button
           class="flex px-4 py-2 border-t-2 border-x-2 border-site-gray rounded-tl-lg hover:bg-white/10 duration-200"
+          @click="openTransactionModal({ type: 'Add' } as TTransactionPayload)"
         >
           <PlusIcon class="h-6 w-6 text-white" />
         </button>
@@ -18,6 +22,7 @@
           v-for="transaction in userTransactions"
           class="py-2 px-4 text-[0.65rem] border-t-2 border-r-2 border-site-gray hover:bg-white/20 duration-200"
           :class="handleCurrentTransactionCheck(transaction) && 'bg-white/20'"
+          @click="openTransactionModal({ type: 'Update', name: transaction.name })"
         >
           {{ transaction.name }}
         </button>
@@ -41,11 +46,18 @@
     </div>
   </section>
   <TransactionItemModal
-    v-if="isTransactionItemModalOpen"
-    @close-transaction-item-modal="closeTransactionItemModal"
+    v-if="isModalOpen && modalType === 'item'"
+    @close-modal="closeModal"
     @submit-transaction-item="submitTransactionItem"
     @delete-transaction-item="deleteTransactionItem"
-    :payload="transactionPayload"
+    :itemPayload="itemPayload"
+  />
+  <TransactionModal
+    v-if="isModalOpen && modalType === 'transaction'"
+    @close-modal="closeModal"
+    @submit-transaction="submitTransaction"
+    @delete-transaction="deleteTransaction"
+    :transactionPayload="transactionPayload"
   />
 </template>
 
@@ -54,37 +66,56 @@ import { PlusIcon } from '@heroicons/vue/24/solid';
 import Influx from '../components/Influx.vue';
 import Outflux from '../components/Outflux.vue';
 import TransactionItemModal from '../components/modals/TransactionItemModal.vue';
-import { onMounted, ref } from 'vue';
+import TransactionModal from '../components/modals/TransactionModal.vue';
+import { ref } from 'vue';
 import mockData from '../mockData';
-import { TTransaction, TTransactionPayload } from '../types/TTransaction';
+import { TTransaction, TItemPayload, TTransactionPayload } from '../types/TTransaction';
 import { useToast } from 'vue-toast-notification';
 
 const toast = useToast();
 
-const isTransactionItemModalOpen = ref(false);
-const isTransactionModalOpen = ref(false);
+const isModalOpen = ref(false);
+const modalType = ref('');
 const transactionIndex = ref(0);
+const itemPayload = ref({} as TItemPayload);
 const transactionPayload = ref({} as TTransactionPayload);
 
 const userTransactions = mockData.user.data.transactions;
 
-const openTransactionItemModal = (payload: TTransactionPayload) => {
-  transactionPayload.value = payload;
-  isTransactionItemModalOpen.value = true;
+const openTransactionItemModal = (payload: TItemPayload) => {
+  modalType.value = 'item';
+  itemPayload.value = payload;
+  isModalOpen.value = true;
 };
 
-const closeTransactionItemModal = () => {
-  isTransactionItemModalOpen.value = false;
+const openTransactionModal = (payload: TTransactionPayload) => {
+  modalType.value = 'transaction';
+  transactionPayload.value = payload;
+  isModalOpen.value = true;
+};
+
+const closeModal = () => {
+  isModalOpen.value = false;
 };
 
 const submitTransactionItem = () => {
   toast.success('SUBMITTED!', { duration: 750 });
-  isTransactionItemModalOpen.value = false;
+  isModalOpen.value = false;
+};
+
+const submitTransaction = () => {
+  toast.success('SUBMITTED!', { duration: 750 });
+  isModalOpen.value = false;
 };
 
 const deleteTransactionItem = () => {
   toast.error('DELETED', { duration: 750 });
-  isTransactionItemModalOpen.value = false;
+  isModalOpen.value = false;
+};
+
+const deleteTransaction = () => {
+  toast.error('DELETED', { duration: 750 });
+  isModalOpen.value = false;
 };
 
 const handleCurrentTransactionCheck = (transaction: TTransaction) => {
@@ -97,6 +128,4 @@ const handleCurrentTransactionCheck = (transaction: TTransaction) => {
     return false;
   }
 };
-
-onMounted(() => {});
 </script>
