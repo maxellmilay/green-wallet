@@ -1,5 +1,5 @@
 <template>
-  <ModalLayout v-if="isTransactionModalOpen">
+  <ModalLayout>
     <div class="flex w-full justify-end">
       <button class="bg-site-red text-black rounded-full" @click="closeTransactionItemModal">
         <XMarkIcon class="h-6 w-6 p-1" />
@@ -32,11 +32,13 @@
       <button
         class="text-site-red border border-site-red hover:bg-site-green/20 px-4 py-2 rounded"
         v-if="payload.type === 'Update'"
+        @click="deleteTransactionItem"
       >
         Delete
       </button>
       <button
         class="text-site-green border border-site-green hover:bg-site-green/20 px-4 py-2 rounded"
+        @click="submitTransactionItem"
       >
         {{ payload.type }}
       </button>
@@ -48,14 +50,25 @@ import { XMarkIcon } from '@heroicons/vue/24/solid';
 import { TTransactionPayload } from '../../types/TTransaction';
 import ModalLayout from './ModalLayout.vue';
 
-const { isTransactionModalOpen, payload } = defineProps({
-  isTransactionModalOpen: Boolean,
+const { payload } = defineProps({
   payload: { type: Object as () => TTransactionPayload, required: true },
 });
 
-const emit = defineEmits(['closeTransactionItemModal']);
+const emit = defineEmits([
+  'closeTransactionItemModal',
+  'submitTransactionItem',
+  'deleteTransactionItem',
+]);
 
 const closeTransactionItemModal = () => {
   emit('closeTransactionItemModal');
+};
+
+const submitTransactionItem = () => {
+  emit('submitTransactionItem');
+};
+
+const deleteTransactionItem = () => {
+  emit('deleteTransactionItem');
 };
 </script>

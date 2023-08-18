@@ -41,8 +41,10 @@
     </div>
   </section>
   <TransactionItemModal
-    :isTransactionModalOpen="isTransactionItemModalOpen"
+    v-if="isTransactionItemModalOpen"
     @close-transaction-item-modal="closeTransactionItemModal"
+    @submit-transaction-item="submitTransactionItem"
+    @delete-transaction-item="deleteTransactionItem"
     :payload="transactionPayload"
   />
 </template>
@@ -57,6 +59,7 @@ import mockData from '../mockData';
 import { TTransaction, TTransactionPayload } from '../types/TTransaction';
 
 const isTransactionItemModalOpen = ref(false);
+const isTransactionModalOpen = ref(false);
 const transactionIndex = ref(0);
 const transactionPayload = ref({} as TTransactionPayload);
 
@@ -68,6 +71,22 @@ const openTransactionItemModal = (payload: TTransactionPayload) => {
 };
 
 const closeTransactionItemModal = () => {
+  isTransactionItemModalOpen.value = false;
+};
+
+const submitTransactionItem = () => {
+  //temporary log
+  console.log(
+    'SUBMITTED',
+    transactionPayload.value.type,
+    transactionPayload.value.description,
+    transactionPayload.value.value
+  );
+  isTransactionItemModalOpen.value = false;
+};
+
+const deleteTransactionItem = () => {
+  console.log('DELETED');
   isTransactionItemModalOpen.value = false;
 };
 
