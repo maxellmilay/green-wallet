@@ -57,6 +57,9 @@ import TransactionItemModal from '../components/modals/TransactionItemModal.vue'
 import { onMounted, ref } from 'vue';
 import mockData from '../mockData';
 import { TTransaction, TTransactionPayload } from '../types/TTransaction';
+import { useToast } from 'vue-toast-notification';
+
+const toast = useToast();
 
 const isTransactionItemModalOpen = ref(false);
 const isTransactionModalOpen = ref(false);
@@ -75,18 +78,12 @@ const closeTransactionItemModal = () => {
 };
 
 const submitTransactionItem = () => {
-  //temporary log
-  console.log(
-    'SUBMITTED',
-    transactionPayload.value.type,
-    transactionPayload.value.description,
-    transactionPayload.value.value
-  );
+  toast.success('SUBMITTED!', { duration: 750 });
   isTransactionItemModalOpen.value = false;
 };
 
 const deleteTransactionItem = () => {
-  console.log('DELETED');
+  toast.error('DELETED', { duration: 750 });
   isTransactionItemModalOpen.value = false;
 };
 

@@ -12,7 +12,8 @@
     "@heroicons/vue": "^2.0.18",
     "tailwind-scrollbar": "^3.0.5",
     "vue": "^3.3.4",
-    "vue-router": "^4.2.4"
+    "vue-router": "^4.2.4",
+    "vue-toast-notification": "3.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.2.3",

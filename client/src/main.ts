@@ -3,6 +3,7 @@ import './style.css';
 import App from './App.vue';
 import { createWebHistory, createRouter } from 'vue-router';
 import routes from './constants/routes';
+import 'vue-toast-notification/dist/theme-sugar.css';
 
 const app = createApp(App);
 
