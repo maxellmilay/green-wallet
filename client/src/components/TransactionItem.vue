@@ -19,14 +19,12 @@ const { description, value } = defineProps({
   value: { type: Number, required: true },
 });
 
-console.log('ITEM', description, value);
-
 const emit = defineEmits<{
-  openTransactionItemModal: [data: TItemPayload];
+  'open-transaction-item-modal': [data: TItemPayload];
 }>();
 
 const openTransactionItemModal = () => {
-  emit('openTransactionItemModal', { type: 'Update', description, value });
+  emit('open-transaction-item-modal', { type: 'Update', description, value });
 };
 
 const valueSign = computed(() => {

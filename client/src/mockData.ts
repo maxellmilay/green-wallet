@@ -16,6 +16,12 @@ export default {
               name: 'Salary',
               value: 5500,
             },
+            {
+              id: 38923629,
+              createdAt: new Date(2023, 8, 16, 9, 23),
+              name: 'Ruel',
+              value: 1800,
+            },
           ],
           outflux: [
             {

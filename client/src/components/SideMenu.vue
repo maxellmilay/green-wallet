@@ -53,7 +53,7 @@ import MenuItem from './MenuItem.vue';
 import Routes from '../enums/routes';
 import ImagePath from '../enums/imagePath';
 
-const isMenuOpen = ref(true);
+const isMenuOpen = ref(false);
 const isLoadedOnce = ref(false);
 
 const closeMenuClick = () => {
