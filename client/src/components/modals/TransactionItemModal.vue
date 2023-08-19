@@ -1,7 +1,7 @@
 <template>
   <ModalLayout @close-modal="modalStore.closeModal">
     <h3 class="text-center font-karla text-lg md:text-2xl mb-4 md:mb-7">
-      {{ selectedModalFunction }} Transaction
+      {{ selectedModalFunction }} Item
     </h3>
     <div class="flex gap-5 items-center mb-3 md:mb-5 text-[0.5rem] md:text-xs lg-text-base">
       <label for="transaction-name" class="grow font-montserrat text-right">Item Name</label>

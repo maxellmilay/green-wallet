@@ -60,7 +60,14 @@ export default {
               value: 17000,
             },
           ],
-          outflux: [],
+          outflux: [
+            {
+              id: 36473629,
+              createdAt: new Date(2023, 8, 19, 2, 23),
+              name: 'Gym',
+              value: -1800,
+            },
+          ],
         },
       ],
     },
