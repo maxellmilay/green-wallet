@@ -10,14 +10,3 @@ export type TTransaction = {
   influx: TTransactionItem[];
   outflux: TTransactionItem[];
 };
-
-export type TItemPayload = {
-  type: string;
-  description: string;
-  value: number;
-};
-
-export type TTransactionPayload = {
-  type: string;
-  name: string;
-};

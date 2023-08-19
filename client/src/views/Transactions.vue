@@ -14,7 +14,6 @@
       <div class="flex">
         <button
           class="flex px-4 py-2 border-t-2 border-x-2 border-site-gray rounded-tl-lg hover:bg-white/10 duration-200"
-          @click="openTransactionModal({ type: 'Add' } as TTransactionPayload)"
         >
           <PlusIcon class="h-6 w-6 text-white" />
         </button>
@@ -22,12 +21,11 @@
           v-for="transaction in userTransactions"
           class="py-2 px-4 text-[0.65rem] border-t-2 border-r-2 border-site-gray hover:bg-white/20 duration-200"
           :class="handleCurrentTransactionCheck(transaction) ? 'bg-white/20' : 'bg-black'"
-          @click="handleTransactionClick(transaction)"
         >
           {{ transaction.name }}
         </button>
       </div>
-      <div class="flex justify-end md:justify-center gap-4 h-fit">
+      <div class="flex justify-end md:justify-center gap-4 h-fit mb-4 md:mb-0">
         <button
           class="border-2 text-xs text-blue-300 border-blue-300 rounded-lg px-4 py-2 bg-black hover:bg-white/10 duration-200"
         >
@@ -42,27 +40,12 @@
       </div>
     </div>
     <div class="flex flex-col md:flex-row font-montserrat mb-5">
-      <Influx
-        @open-transaction-item-modal="(payload) => openTransactionItemModal(payload)"
-        :currentInflux="currentTransaction.influx"
-      />
+      <Influx />
       <Outflux />
     </div>
   </section>
-  <TransactionItemModal
-    v-if="isModalOpen && modalType === 'item'"
-    @close-modal="closeModal"
-    @submit-transaction-item="submitTransactionItem"
-    @delete-transaction-item="deleteTransactionItem"
-    :itemPayload="itemPayload"
-  />
-  <TransactionModal
-    v-if="isModalOpen && modalType === 'transaction'"
-    @close-modal="closeModal"
-    @submit-transaction="submitTransaction"
-    @delete-transaction="deleteTransaction"
-    :transactionPayload="transactionPayload"
-  />
+  <TransactionItemModal v-if="isModalOpen && modalType === 'item'" />
+  <TransactionModal v-if="isModalOpen && modalType === 'transaction'" />
 </template>
 
 <script setup lang="ts">

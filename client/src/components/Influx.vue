@@ -26,16 +26,4 @@ import TransactionItem from './TransactionItem.vue';
 import { PlusIcon } from '@heroicons/vue/24/solid';
 import { TItemPayload, TTransactionItem } from '../types/TTransaction';
 import { watch } from 'vue';
-
-const { currentInflux } = defineProps({
-  currentInflux: { type: Object as () => TTransactionItem[], required: true },
-});
-
-watch(currentInflux, (_new, _old) => console.log('INFLUX', _new));
-
-const emit = defineEmits(['open-transaction-item-modal']);
-
-const openTransactionItemModal = (payload: TItemPayload) => {
-  emit('open-transaction-item-modal', payload);
-};
 </script>

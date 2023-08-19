@@ -26,13 +26,5 @@ const routeClass = computed(() => {
     return 'h-full';
   }
 });
-
-const routeContainerClass = computed(() => {
-  if (pathName.value === Routes.PROFILE) {
-    return 'h-[100dvh]';
-  } else {
-    return 'h-full';
-  }
-});
 </script>
 

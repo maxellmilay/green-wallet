@@ -43,22 +43,4 @@
 <script setup lang="ts">
 import { TItemPayload } from '../../types/TTransaction';
 import ModalLayout from './ModalLayout.vue';
-
-const { itemPayload } = defineProps({
-  itemPayload: { type: Object as () => TItemPayload, required: true },
-});
-
-const emit = defineEmits(['closeModal', 'submitTransactionItem', 'deleteTransactionItem']);
-
-const closeModal = () => {
-  emit('closeModal');
-};
-
-const submitTransactionItem = () => {
-  emit('submitTransactionItem');
-};
-
-const deleteTransactionItem = () => {
-  emit('deleteTransactionItem');
-};
 </script>

@@ -14,18 +14,6 @@ import { computed, ref } from 'vue';
 import { TItemPayload } from '../types/TTransaction';
 
 const isPositive = ref();
-const { description, value } = defineProps({
-  description: { type: String, required: true },
-  value: { type: Number, required: true },
-});
-
-const emit = defineEmits<{
-  'open-transaction-item-modal': [data: TItemPayload];
-}>();
-
-const openTransactionItemModal = () => {
-  emit('open-transaction-item-modal', { type: 'Update', description, value });
-};
 
 const valueSign = computed(() => {
   if (value >= 0) {
