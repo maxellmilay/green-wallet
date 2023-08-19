@@ -13,31 +13,33 @@ const useModalStore = defineStore({
     selectedModalFunction: defaultModalFunction,
   }),
   actions: {
-    openItemModal(modalType: string, item: TTransactionItem) {
+    openItemModal(modalFunction: string, item: TTransactionItem) {
       if (this.isModalOpen) {
         return;
       }
       const { setSelectedItem } = useTransactionStore();
-      setSelectedItem(item);
+      if (modalFunction === Types.UPDATE) {
+        setSelectedItem(item);
+      }
       this.selectedModalType = Types.ITEM;
-      this.selectedModalFunction = modalType;
+      this.selectedModalFunction = modalFunction;
       this.isModalOpen = true;
     },
-    openTransactionModal(modalType: string, transaction: TTransaction) {
+    openTransactionModal(modalFunction: string, transaction: TTransaction) {
       if (this.isModalOpen) {
         return;
       }
       const { setSelectedTransaction } = useTransactionStore();
-      if (modalType === Types.ADD) {
-        setSelectedTransaction({} as TTransaction);
-      } else if (modalType === Types.UPDATE) {
+      if (modalFunction === Types.UPDATE) {
         setSelectedTransaction(transaction);
       }
+      this.selectedModalFunction = modalFunction;
       this.selectedModalType = Types.TRANSACTION;
       this.isModalOpen = true;
     },
     closeModal() {
       this.isModalOpen = false;
+      //possible data leak
     },
     setSelectedModalType(type: string) {
       this.selectedModalType = type;

@@ -9,7 +9,7 @@
         id="transaction-name"
         type="text"
         class="w-[55%] lg:w-[60%] bg-black border border-site-gray rounded px-3 py-2 md:p-4"
-        v-model="selectedItem.name"
+        v-model="item.name"
         key="Name"
       />
     </div>
@@ -19,14 +19,14 @@
         id="transaction-amount"
         type="number"
         class="w-[55%] lg:w-[60%] bg-black border border-site-gray rounded px-3 py-2 md:p-4"
-        v-model="selectedItem.value"
+        v-model="item.value"
         key="Amount"
       />
     </div>
     <div class="flex justify-end text-xs gap-3">
       <button
         class="text-site-red border border-site-red hover:bg-site-green/20 px-4 py-2 rounded"
-        v-if="selectedModalFunction === 'Update'"
+        v-if="selectedModalFunction === Types.UPDATE"
       >
         Delete
       </button>
@@ -43,9 +43,25 @@ import ModalLayout from './ModalLayout.vue';
 import useTransactionStore from '../../stores/useTransactionStore';
 import { storeToRefs } from 'pinia';
 import useModalStore from '../../stores/useModalStore';
+import Types from '../../enums/types';
+import { computed } from 'vue';
+import { defaultInputString, defaultInputNumber } from '../../constants/defaults';
 
 const transactionStore = useTransactionStore();
 const modalStore = useModalStore();
 const { selectedItem } = storeToRefs(transactionStore);
 const { selectedModalType, selectedModalFunction } = storeToRefs(modalStore);
+
+const item = computed(() => {
+  const item = {
+    name: defaultInputString,
+    value: defaultInputNumber,
+  };
+  if (selectedModalFunction.value === Types.UPDATE) {
+    item.name = selectedItem.value.name;
+    item.value = selectedItem.value.value;
+  }
+
+  return item;
+});
 </script>

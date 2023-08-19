@@ -14,6 +14,7 @@
       <div class="flex">
         <button
           class="flex px-4 py-2 border-t-2 border-x-2 border-site-gray rounded-tl-lg hover:bg-white/10 duration-200"
+          @click="modalStore.openTransactionModal(Types.ADD, defaultTransaction)"
         >
           <PlusIcon class="h-6 w-6 text-white" />
         </button>
@@ -21,6 +22,7 @@
           v-for="transaction in userTransactions"
           class="py-2 px-4 text-[0.65rem] border-t-2 border-r-2 border-site-gray hover:bg-white/20 duration-200"
           :class="handleCurrentTransactionCheck(transaction) ? 'bg-white/20' : 'bg-black'"
+          @click="transactionStore.setSelectedTransaction(transaction)"
         >
           {{ transaction.name }}
         </button>
@@ -45,7 +47,7 @@
     </div>
   </section>
   <TransactionItemModal v-if="isModalOpen && selectedModalType === Types.ITEM" />
-  <!-- <TransactionModal v-if="isModalOpen && selectedModalType === Types.TRANSACTION" /> -->
+  <TransactionModal v-if="isModalOpen && selectedModalType === Types.TRANSACTION" />
 </template>
 
 <script setup lang="ts">
@@ -56,7 +58,7 @@ import TransactionItemModal from '../components/modals/TransactionItemModal.vue'
 import TransactionModal from '../components/modals/TransactionModal.vue';
 import mockData from '../mockData';
 import { TTransaction } from '../types/TTransaction';
-import { defaultTransactionIndex } from '../constants/defaults';
+import { defaultTransaction, defaultTransactionIndex } from '../constants/defaults';
 import Types from '../enums/types';
 import useTransactionStore from '../stores/useTransactionStore';
 import useModalStore from '../stores/useModalStore';
