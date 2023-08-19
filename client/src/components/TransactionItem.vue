@@ -1,22 +1,31 @@
 <template>
   <button
     class="flex justify-between px-[10%] py-4 border-b border-site-gray text-xs md:text-base hover:bg-white/10 duration-200"
-    @click="openTransactionItemModal"
   >
-    <p>{{ description }}</p>
+    <p>{{ name }}</p>
     <p class="font-thin" :class="isPositive ? 'text-site-green' : 'text-site-red'">
-      {{ valueSign }} {{ Math.abs(value) }}
+      {{ amountSign }} {{ Math.abs(amount) }}
     </p>
   </button>
 </template>
 <script setup lang="ts">
-import { computed, ref } from 'vue';
-import { TItemPayload } from '../types/TTransaction';
+import { computed, ref, watch } from 'vue';
+import useModalStore from '../stores/useModalStore';
+import useTransactionStore from '../stores/useTransactionStore';
+import { TTransactionItem } from '../types/TTransaction';
 
-const isPositive = ref();
+const { openItemModal } = useModalStore();
+const { setSelectedItem } = useTransactionStore();
 
-const valueSign = computed(() => {
-  if (value >= 0) {
+const isPositive = ref(false);
+
+const { name, amount } = defineProps({
+  name: { type: String, required: true },
+  amount: { type: Number, required: true },
+});
+
+const amountSign = computed(() => {
+  if (amount >= 0) {
     isPositive.value = true;
     return '+';
   } else {

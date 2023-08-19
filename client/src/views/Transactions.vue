@@ -33,7 +33,7 @@
         </button>
         <button
           class="border-2 text-xs text-white border-white rounded-lg px-4 py-2 bg-black hover:bg-site-red/20 hover:text-white duration-200"
-          @click="openTransactionModal({ type: 'Update', name: currentTransaction.name })"
+          @click="modalStore.openTransactionModal(Types.UPDATE, selectedTransaction)"
         >
           Edit
         </button>
@@ -44,8 +44,8 @@
       <Outflux />
     </div>
   </section>
-  <TransactionItemModal v-if="isModalOpen && modalType === 'item'" />
-  <TransactionModal v-if="isModalOpen && modalType === 'transaction'" />
+  <TransactionItemModal v-if="isModalOpen && selectedModalType === Types.ITEM" />
+  <!-- <TransactionModal v-if="isModalOpen && selectedModalType === Types.TRANSACTION" /> -->
 </template>
 
 <script setup lang="ts">
@@ -54,71 +54,31 @@ import Influx from '../components/Influx.vue';
 import Outflux from '../components/Outflux.vue';
 import TransactionItemModal from '../components/modals/TransactionItemModal.vue';
 import TransactionModal from '../components/modals/TransactionModal.vue';
-import { ref } from 'vue';
 import mockData from '../mockData';
-import { TTransaction, TItemPayload, TTransactionPayload } from '../types/TTransaction';
-import { useToast } from 'vue-toast-notification';
-import { defaultModalType, defaultTransactionIndex } from '../constants/defaults';
+import { TTransaction } from '../types/TTransaction';
+import { defaultTransactionIndex } from '../constants/defaults';
 import Types from '../enums/types';
+import useTransactionStore from '../stores/useTransactionStore';
+import useModalStore from '../stores/useModalStore';
+import { storeToRefs } from 'pinia';
 
 const userTransactions = mockData.user.data.transactions;
 
-const toast = useToast();
+const transactionStore = useTransactionStore();
+const { selectedTransaction } = storeToRefs(transactionStore);
+const modalStore = useModalStore();
+const { isModalOpen, selectedModalType } = storeToRefs(modalStore);
 
-const isModalOpen = ref(false);
-const modalType = ref(defaultModalType);
-const currentTransaction = ref(userTransactions[defaultTransactionIndex]);
-const itemPayload = ref({} as TItemPayload);
-const transactionPayload = ref({} as TTransactionPayload);
-
-const openTransactionItemModal = (payload: TItemPayload) => {
-  modalType.value = Types.ITEM;
-  itemPayload.value = payload;
-  isModalOpen.value = true;
-};
-
-const openTransactionModal = (payload: TTransactionPayload) => {
-  modalType.value = Types.TRANSACTION;
-  transactionPayload.value = payload;
-  isModalOpen.value = true;
-};
-
-const closeModal = () => {
-  isModalOpen.value = false;
-};
-
-const submitTransactionItem = () => {
-  toast.success('SUBMITTED!', { duration: 750 });
-  isModalOpen.value = false;
-};
-
-const submitTransaction = () => {
-  toast.success('SUBMITTED!', { duration: 750 });
-  isModalOpen.value = false;
-};
-
-const deleteTransactionItem = () => {
-  toast.error('DELETED', { duration: 750 });
-  isModalOpen.value = false;
-};
-
-const deleteTransaction = () => {
-  toast.error('DELETED', { duration: 750 });
-  isModalOpen.value = false;
-};
+transactionStore.setSelectedTransaction(userTransactions[defaultTransactionIndex]);
 
 const handleCurrentTransactionCheck = (transaction: TTransaction) => {
-  if (!transaction.name || !currentTransaction) {
+  if (!transaction.name || !selectedTransaction) {
     return false;
   }
-  if (transaction.name === currentTransaction.value.name) {
+  if (transaction.name === selectedTransaction.value.name) {
     return true;
   } else {
     return false;
   }
-};
-
-const handleTransactionClick = (transaction: TTransaction) => {
-  currentTransaction.value = transaction;
 };
 </script>

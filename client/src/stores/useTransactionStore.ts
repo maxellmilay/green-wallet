@@ -1,9 +1,9 @@
 import { defineStore } from 'pinia';
-import { TTransaction } from '../types/TTransaction';
-import { TTransactionItem } from '../types/TTransaction';
+import { TTransaction, TTransactionItem } from '../types/TTransaction';
+import Store from '../enums/store';
 
 const useTransactionStore = defineStore({
-  id: 'transaction',
+  id: Store.TRANSACTION,
   state: () => ({
     selectedTransaction: {} as TTransaction,
     selectedItem: {} as TTransactionItem,

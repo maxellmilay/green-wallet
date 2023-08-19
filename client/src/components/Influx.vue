@@ -7,15 +7,15 @@
       class="flex flex-col overflow-y-auto scrollbar-thumb-white scrollbar-track-white/10 scrollbar-thin h-[18rem]"
     >
       <TransactionItem
-        :description="transaction.name"
-        :value="transaction.value"
-        @open-transaction-item-modal="(payload) => openTransactionItemModal(payload)"
-        v-for="transaction in currentInflux"
+        :name="item.name"
+        :amount="item.value"
+        v-for="item in selectedTransaction.influx"
+        @click="openItemModal(Types.UPDATE, item)"
       />
     </div>
     <button
       class="flex justify-center items-center py-4 border-t border-site-gray rounded-bl-lg hover:bg-white/10 duration-200"
-      @click="openTransactionItemModal({ type: 'Add' } as TItemPayload)"
+      @click="openItemModal(Types.ADD, defaultTransactionItem)"
     >
       <PlusIcon class="h-6 w-6" />
     </button>
@@ -24,6 +24,16 @@
 <script setup lang="ts">
 import TransactionItem from './TransactionItem.vue';
 import { PlusIcon } from '@heroicons/vue/24/solid';
-import { TItemPayload, TTransactionItem } from '../types/TTransaction';
+import useModalStore from '../stores/useModalStore';
+import useTransactionStore from '../stores/useTransactionStore';
+import { defaultTransactionItem } from '../constants/defaults';
+import { storeToRefs } from 'pinia';
 import { watch } from 'vue';
+import Types from '../enums/types';
+
+const transactionStore = useTransactionStore();
+const { selectedTransaction, selectedItem } = storeToRefs(transactionStore);
+const { openItemModal, isModalOpen } = useModalStore();
+
+watch(selectedItem, (_new, _old) => console.log('ITEM', _new));
 </script>
