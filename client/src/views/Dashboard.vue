@@ -28,20 +28,14 @@ import { SunIcon, ShoppingCartIcon, CurrencyDollarIcon } from '@heroicons/vue/24
 import TransactionPreviewItem from '../components/TransactionPreviewItem.vue';
 import SummaryItem from '../components/SummaryItem.vue';
 import mockData from '../mockData';
-import { ref } from 'vue';
 import Summary from '../enums/summary';
-
-const transactionIndex = ref(0);
+import sortTransactions from '../helper/sortTransaction';
+import { defaultTransactionIndex } from '../constants/defaults';
 
 const userData = mockData.user.data;
 const { balance, expenses, income, transactions } = userData;
 
-const combinedTransactions = [
-  ...transactions[transactionIndex.value].influx,
-  ...transactions[transactionIndex.value].outflux,
-];
+const defaultTransaction = transactions[defaultTransactionIndex];
 
-const sortedTransactions = combinedTransactions.sort(
-  (objA, objB) => Number(objB.createdAt) - Number(objA.createdAt)
-);
+const sortedTransactions = sortTransactions(defaultTransaction.influx, defaultTransaction.outflux);
 </script>

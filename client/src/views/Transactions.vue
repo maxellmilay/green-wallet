@@ -30,6 +30,7 @@
       <div class="flex justify-end md:justify-center gap-4 h-fit mb-4 md:mb-0">
         <button
           class="border-2 text-xs text-blue-300 border-blue-300 rounded-lg px-4 py-2 bg-black hover:bg-white/10 duration-200"
+          @click="handleExportClick"
         >
           Export
         </button>
@@ -63,6 +64,8 @@ import Types from '../enums/types';
 import useTransactionStore from '../stores/useTransactionStore';
 import useModalStore from '../stores/useModalStore';
 import { storeToRefs } from 'pinia';
+import exportFromJSON from 'export-from-json';
+import sortTransactions from '../helper/sortTransaction';
 
 const userTransactions = mockData.user.data.transactions;
 
@@ -82,5 +85,15 @@ const handleCurrentTransactionCheck = (transaction: TTransaction) => {
   } else {
     return false;
   }
+};
+
+const handleExportClick = () => {
+  const data = sortTransactions(
+    selectedTransaction.value.influx,
+    selectedTransaction.value.outflux
+  );
+  const fileName = selectedTransaction.value.name;
+  const exportType = exportFromJSON.types.csv;
+  exportFromJSON({ data, fileName, exportType });
 };
 </script>
