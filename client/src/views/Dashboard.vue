@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col w-[90%] py-12 md:h-full">
+  <div class="flex flex-col w-[90%] py-6 md:h-full">
     <h2 class="font-karla text-white text-4xl text-center md:text-left">Dashboard</h2>
     <div class="flex flex-col md:flex-row grow gap-10 py-10">
       <section class="flex flex-col items-center md:h-full gap-y-12">
