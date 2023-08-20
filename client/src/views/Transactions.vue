@@ -11,7 +11,7 @@
   </header>
   <section :inert="isModalOpen" class="flex flex-col w-full">
     <div class="flex flex-col-reverse md:flex-row justify-between">
-      <div class="flex">
+      <div class="flex flex-wrap">
         <button
           class="flex px-4 py-2 border-t-2 border-x-2 border-site-gray rounded-tl-lg hover:bg-white/10 duration-200"
           @click="modalStore.openTransactionModal(Types.ADD, defaultTransaction)"
@@ -20,7 +20,7 @@
         </button>
         <button
           v-for="transaction in userTransactions"
-          class="py-2 px-4 text-[0.65rem] border-t-2 border-r-2 border-site-gray hover:bg-white/20 duration-200"
+          class="py-2 px-4 text-[0.65rem] border-2 border-site-gray hover:bg-white/20 duration-200"
           :class="handleCurrentTransactionCheck(transaction) ? 'bg-white/20' : 'bg-black'"
           @click="transactionStore.setSelectedTransaction(transaction)"
         >
