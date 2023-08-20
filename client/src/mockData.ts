@@ -51,6 +51,25 @@ export default {
           ],
         },
         {
+          name: 'Bootcamp',
+          influx: [
+            {
+              id: 56992729,
+              createdAt: new Date(2023, 8, 20, 3, 23),
+              name: 'Budget',
+              value: 1000,
+            },
+          ],
+          outflux: [
+            {
+              id: 72903629,
+              createdAt: new Date(2023, 8, 20, 8, 23),
+              name: 'Event Fee',
+              value: -500,
+            },
+          ],
+        },
+        {
           name: 'September Budget',
           influx: [
             {

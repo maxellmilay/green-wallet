@@ -8,14 +8,26 @@
         <SummaryItem :icon="CurrencyDollarIcon" :name="Summary.INCOME" :value="income" />
       </section>
       <section class="flex flex-col md:h-full md:grow h-[30rem] px-[10%] md:px-0">
-        <h3 class="font-karla text-2xl text-center md:text-left mb-5">Transactions</h3>
+        <div class="flex flex-col lg:flex-row justify-between mb-5 relative">
+          <h3 class="font-karla text-2xl text-center md:text-left mb-2 lg:mb-0">Transactions</h3>
+          <button
+            class="flex justify-between items-center h-8 w-44 px-4 text-left border rounded-lg text-xs"
+            @click="dropDownClick"
+          >
+            <p>
+              {{ selectedTransaction.name }}
+            </p>
+            <ChevronDownIcon class="h-4 w-4" />
+          </button>
+          <TransactionDropdown v-if="isDropdownOpen" @close-dropdown="dropDownClick" />
+        </div>
         <div
           class="flex flex-col basis-0 pr-5 gap-5 grow overflow-y-auto scrollbar-thumb-white scrollbar-track-black/70 scrollbar-thin"
         >
           <TransactionPreviewItem
             :amount="transaction.value"
             :description="transaction.name"
-            v-for="transaction in sortedTransactions"
+            v-for="transaction in sortedSelectedTransaction"
           />
         </div>
       </section>
@@ -31,11 +43,22 @@ import mockData from '../mockData';
 import Summary from '../enums/summary';
 import sortTransactions from '../helper/sortTransaction';
 import { defaultTransactionIndex } from '../constants/defaults';
+import useTransactionStore from '../stores/useTransactionStore';
+import { storeToRefs } from 'pinia';
+import { ref } from 'vue';
+import TransactionDropdown from '../components/TransactionDropdown.vue';
+import { ChevronDownIcon } from '@heroicons/vue/24/solid';
 
 const userData = mockData.user.data;
 const { balance, expenses, income, transactions } = userData;
 
-const defaultTransaction = transactions[defaultTransactionIndex];
+const isDropdownOpen = ref(false);
+const transactionStore = useTransactionStore();
+const { sortedSelectedTransaction, selectedTransaction } = storeToRefs(transactionStore);
 
-const sortedTransactions = sortTransactions(defaultTransaction.influx, defaultTransaction.outflux);
+transactionStore.setSelectedTransaction(transactions[defaultTransactionIndex]);
+
+const dropDownClick = () => {
+  isDropdownOpen.value = !isDropdownOpen.value;
+};
 </script>
