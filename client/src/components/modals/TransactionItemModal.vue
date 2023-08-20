@@ -33,7 +33,7 @@
       <button
         class="text-site-green border border-site-green hover:bg-site-green/20 px-4 py-2 rounded"
       >
-        {{ selectedModalType }}
+        {{ selectedModalFunction }}
       </button>
     </div>
   </ModalLayout>
@@ -50,7 +50,7 @@ import { defaultInputString, defaultInputNumber } from '../../constants/defaults
 const transactionStore = useTransactionStore();
 const modalStore = useModalStore();
 const { selectedItem } = storeToRefs(transactionStore);
-const { selectedModalType, selectedModalFunction } = storeToRefs(modalStore);
+const { selectedModalFunction } = storeToRefs(modalStore);
 
 const item = computed(() => {
   const item = {
