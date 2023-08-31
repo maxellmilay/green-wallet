@@ -1,23 +1,17 @@
 from urllib.parse import urlencode
+
 import os
-import requests
 
-from rest_framework import status, serializers
 from rest_framework.views import APIView
-from rest_framework.response import Response
 
-from django.urls import reverse
 from django.shortcuts import redirect
 
 from .services import google_get_access_token, google_get_user_info
+from .serializers import InputSerializer
 
 class GoogleSocialAuthView(APIView):
-    class InputSerializer(serializers.Serializer):
-        code = serializers.CharField(required=False)
-        error = serializers.CharField(required=False)
-
     def get(self, request):
-        input_serializer = self.InputSerializer(data=request.GET)
+        input_serializer = InputSerializer(data=request.GET)
         input_serializer.is_valid(raise_exception=True)
 
         validated_data = input_serializer.validated_data
@@ -42,7 +36,8 @@ class GoogleSocialAuthView(APIView):
         'email': user_data['email'],
         'first_name': user_data.get('given_name'),
         'last_name': user_data.get('family_name'),
-    }
+        'image_url': user_data.get('picture')
+        }
 
         response = redirect(f"{os.environ.get('BASE_FRONTEND_URL')}/dashboard")
         response.set_cookie('User_data',profile_data, max_age = 60 * 24 * 60 * 60)

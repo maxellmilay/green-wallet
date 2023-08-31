@@ -29,6 +29,6 @@ def google_get_user_info(*, access_token:str) -> Dict[str,Any]:
     response = requests.get(GOOGLE_USER_INFO_URL,params={'access_token':access_token})
 
     if not response.ok:
-        raise ValidationError('Could not get user info frm Google')
+        raise ValidationError('Could not get user info from Google')
 
     return response.json()

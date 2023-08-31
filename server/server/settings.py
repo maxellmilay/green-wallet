@@ -31,8 +31,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-AUTH_USER_MODEL = 'authentication.User'
-
 # Application definition
 
 SITE_ID = 2
@@ -46,7 +44,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sites',
 
-    'authentication',
     'social_auth',
 
     'allauth',
