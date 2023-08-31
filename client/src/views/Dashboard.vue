@@ -36,18 +36,16 @@
 </template>
 
 <script setup lang="ts">
-import { SunIcon, ShoppingCartIcon, CurrencyDollarIcon } from '@heroicons/vue/24/solid';
+import { SunIcon, ShoppingCartIcon, CurrencyDollarIcon, ChevronDownIcon } from '@heroicons/vue/24/solid';
 import TransactionPreviewItem from '../components/TransactionPreviewItem.vue';
 import SummaryItem from '../components/SummaryItem.vue';
 import mockData from '../mockData';
 import Summary from '../enums/summary';
-import sortTransactions from '../helper/sortTransaction';
 import { defaultTransactionIndex } from '../constants/defaults';
 import useTransactionStore from '../stores/useTransactionStore';
 import { storeToRefs } from 'pinia';
 import { ref } from 'vue';
 import TransactionDropdown from '../components/TransactionDropdown.vue';
-import { ChevronDownIcon } from '@heroicons/vue/24/solid';
 
 const userData = mockData.user.data;
 const { balance, expenses, income, transactions } = userData;
