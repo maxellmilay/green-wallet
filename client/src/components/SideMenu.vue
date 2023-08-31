@@ -18,7 +18,7 @@
           <MenuItem :icon="UserCircleIcon" name="Profile" :route="Routes.PROFILE" />
           <MenuItem :icon="ComputerDesktopIcon" name="Dashboard" :route="Routes.DASHBOARD" />
           <MenuItem :icon="BanknotesIcon" name="Transactions" :route="Routes.TRANSACTIONS" />
-          <MenuItem :icon="ArrowLeftCircleIcon" name="Logout" :route="Routes.LOGIN" />
+          <MenuItem :icon="ArrowLeftCircleIcon" name="Logout" :route="Routes.LOGIN" @click="logout"/>
         </nav>
       </header>
     </div>
@@ -48,10 +48,13 @@ import {
   ArrowLeftCircleIcon,
   BanknotesIcon,
 } from '@heroicons/vue/24/solid';
-import { ref } from 'vue';
+import { ref, inject } from 'vue';
 import MenuItem from './MenuItem.vue';
 import Routes from '../enums/routes';
 import ImagePath from '../enums/imagePath';
+import { VueCookies } from 'vue-cookies'
+
+const $cookies = inject<VueCookies>('$cookies'); 
 
 const isMenuOpen = ref(false);
 const isLoadedOnce = ref(false);
@@ -62,4 +65,13 @@ const closeMenuClick = () => {
   }
   isMenuOpen.value = !isMenuOpen.value;
 };
+
+const logout = () => {
+  if(!$cookies){
+    return;
+  }
+  $cookies.remove("Token")
+  $cookies.remove("csrftoken",)
+}
+
 </script>
