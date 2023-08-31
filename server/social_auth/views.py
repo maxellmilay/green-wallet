@@ -38,7 +38,13 @@ class GoogleSocialAuthView(APIView):
 
         user_data = google_get_user_info(access_token=access_token)
 
+        profile_data = {
+        'email': user_data['email'],
+        'first_name': user_data.get('given_name'),
+        'last_name': user_data.get('family_name'),
+    }
+
         response = redirect(f"{os.environ.get('BASE_FRONTEND_URL')}/dashboard")
-        response.set_cookie('User_data',user_data,max_age = 60 * 24 * 60 * 60)
+        response.set_cookie('User_data',profile_data, max_age = 60 * 24 * 60 * 60)
 
         return response
