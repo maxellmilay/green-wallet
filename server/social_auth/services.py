@@ -4,9 +4,11 @@ import jwt
 
 from typing import Dict, Any
 
-
 from django.core.exceptions import ValidationError
 from django.shortcuts import redirect
+from django.contrib.auth.models import User
+
+from .models import GoogleUser
 
 from urllib.parse import urlencode
 
@@ -36,8 +38,10 @@ def google_get_user_info(*, access_token:str) -> Dict[str,Any]:
 
     if not response.ok:
         raise ValidationError('Could not get user info from Google')
+    
+    user_data = response.json()
 
-    return response.json()
+    return user_data
 
 def create_jwt_token(validated_data):
     code = validated_data.get('code')
@@ -56,18 +60,42 @@ def create_jwt_token(validated_data):
 
     user_data = google_get_user_info(access_token=access_token)
 
-    # This is where the user data is checked if it is registered in the DB
-
     profile_data = {
     'email': user_data['email'],
-    'first_name': user_data.get('given_name'),
-    'last_name': user_data.get('family_name'),
-    'image_url': user_data.get('picture')
+    'given_name': user_data.get('given_name'),
+    'family_name': user_data.get('family_name'),
+    'picture': user_data.get('picture')
     }
+
+    # Register/Update user in Django Admin
+    if not User.objects.filter(username=profile_data['email']).exists():
+        user = User.objects.create_user(profile_data['email'],email=profile_data['email'],password=None,first_name=profile_data['given_name'],last_name=profile_data['family_name'])
+        user.save()
+    else:
+        user = User.objects.get(username=profile_data['email'])
+        user.username = profile_data['email']
+        user.email = profile_data['email']
+        user.first_name = profile_data['given_name']
+        user.last_name = profile_data['family_name']
+        user.save()
+
+    # Register/Update user in PostgreSQL db
+    # pylint: disable=E1101
+    if not GoogleUser.objects.filter(email=profile_data['email']).exists():
+        user = GoogleUser(first_name=profile_data['given_name'],last_name=profile_data['family_name'],email=profile_data['email'],picture=profile_data['picture'])
+        user.save()
+    else:
+        # pylint: disable=E1101
+        user = GoogleUser.objects.get(email=profile_data['email'])
+        user.first_name = profile_data['given_name']
+        user.last_name = profile_data['family_name']
+        user.email = profile_data['email']
+        user.picture = profile_data['picture']
+        user.save()
 
     jwt_token = jwt.encode(profile_data,os.environ.get('SECRET_KEY'), algorithm="HS256")
 
-    return user_data, jwt_token
+    return jwt_token
 
 def validate_jwt_token(jwt_token):
     return jwt.decode(jwt_token, os.environ.get('SECRET_KEY'), algorithms=['HS256'])
