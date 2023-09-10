@@ -8,4 +8,4 @@ class InputSerializer(serializers.Serializer):
 class GoogleUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = GoogleUser
-        fields = ['uuid','first_name','last_name','email','picture','created']
+        fields = ['uuid','first_name','last_name','email','picture','balance','expenses','income','created']

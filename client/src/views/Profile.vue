@@ -11,9 +11,9 @@
     <p class="font-karla text-xs text-center">{{ profileData.email }}</p>
   </div>
   <section class="flex flex-col gap-5">
-    <ProfileSummaryItem :name="Summary.BALANCE" :value="balance" />
-    <ProfileSummaryItem :name="Summary.EXPENSES" :value="expenses" />
-    <ProfileSummaryItem :name="Summary.INCOME" :value="income" />
+    <ProfileSummaryItem :name="Summary.BALANCE" :value="profileData.balance" />
+    <ProfileSummaryItem :name="Summary.EXPENSES" :value="profileData.expenses" />
+    <ProfileSummaryItem :name="Summary.INCOME" :value="profileData.income" />
   </section>
 </template>
 
@@ -21,10 +21,9 @@
 import ProfileSummaryItem from '../components/ProfileSummaryItem.vue';
 import Summary from '../enums/summary';
 import mockData from '../mockData';
-import ImagePath from '../enums/imagePath';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { TUser } from '../types/TUser';
-import { ref, Ref, inject, onMounted } from 'vue';
+import { ref, Ref, inject } from 'vue';
 import { VueCookies } from 'vue-cookies';
 
 const { balance, expenses, income } = mockData.user.data;
@@ -45,6 +44,9 @@ await axios
       lastName: dbUserInfo.last_name,
       email: dbUserInfo.email,
       picture: dbUserInfo.picture,
+      balance: dbUserInfo.balance,
+      expenses: dbUserInfo.expenses,
+      income: dbUserInfo.income,
     };
   })
   .catch((error: AxiosError) => {
