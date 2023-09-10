@@ -10,9 +10,11 @@
   },
   "dependencies": {
     "@heroicons/vue": "^2.0.18",
+    "axios": "^1.5.0",
     "export-from-json": "^1.7.3",
     "pinia": "^2.1.6",
     "tailwind-scrollbar": "^3.0.5",
+    "ts-node": "^10.9.1",
     "vue": "^3.3.4",
     "vue-cookies": "^1.8.3",
     "vue-router": "^4.2.4",

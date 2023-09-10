@@ -1,7 +1,11 @@
 <template>
   <SideMenu v-if="pathName !== Routes.LOGIN" />
   <main class="flex flex-col items-center grow" :class="routeClass">
-    <RouterView />
+    <Suspense>
+      <template #default>
+        <RouterView />
+      </template>
+    </Suspense>
   </main>
 </template>
 
@@ -27,4 +31,3 @@ const routeClass = computed(() => {
   }
 });
 </script>
-
