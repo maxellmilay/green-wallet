@@ -11,3 +11,6 @@ class GoogleUser(models.Model):
     expenses = models.IntegerField(default=0)
     income = models.IntegerField(default=0)
     created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return str(self.email)
