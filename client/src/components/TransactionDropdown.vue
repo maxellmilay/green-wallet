@@ -14,12 +14,23 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import mockData from '../mockData';
 import useTransactionStore from '../stores/useTransactionStore';
-import { TTransaction } from '../types/TTransaction';
+import { TGroup } from '../types/TTransaction';
+import axios, { Axios, AxiosError, AxiosResponse } from 'axios';
 
-const { transactions } = mockData.user.data;
+const transactions = ref([] as any);
+
+await axios
+  .get('/transaction/group')
+  .then((response: AxiosResponse) => {
+    const dbInfo = response.data;
+    transactions.value = dbInfo;
+  })
+  .catch((error: AxiosError) => {
+    console.log(error);
+  });
 
 const { setSelectedTransaction } = useTransactionStore();
 const emit = defineEmits(['close-dropdown']);
@@ -33,7 +44,7 @@ const borderClass = (index: number) => {
   }
 };
 
-const transactionClick = (transaction: TTransaction) => {
+const transactionClick = (transaction: TGroup) => {
   setSelectedTransaction(transaction);
   emit('close-dropdown');
 };

@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import ListTransactions, TransactionDetail, CreateTransaction,CreateGroup, TransactionGroupDetail, ListGroups
+from .views import ListTransactions, TransactionDetail, CreateTransaction, CreateGroup, TransactionGroupDetail, ListGroups
 
 urlpatterns = [
     path('list/<str:group>',ListTransactions.as_view(), name='List Transactions from Group'),

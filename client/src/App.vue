@@ -2,9 +2,7 @@
   <SideMenu v-if="pathName !== Routes.LOGIN" />
   <main class="flex flex-col items-center grow" :class="routeClass">
     <Suspense>
-      <template #default>
-        <RouterView />
-      </template>
+      <RouterView />
     </Suspense>
   </main>
 </template>

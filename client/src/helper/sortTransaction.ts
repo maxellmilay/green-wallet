@@ -1,10 +1,8 @@
-import { TTransactionItem } from '../types/TTransaction';
+import { TItem } from '../types/TTransaction';
 
-const sortTransactions = (influx: TTransactionItem[], outflux: TTransactionItem[]) => {
-  const combinedTransactions = [...influx, ...outflux];
-
-  const sortedTransactions = combinedTransactions.sort(
-    (objA, objB) => Number(objB.createdAt) - Number(objA.createdAt)
+const sortTransactions = (transactions: TItem[]) => {
+  const sortedTransactions = transactions.sort(
+    (objA, objB) => Number(objB.created) - Number(objA.created)
   );
 
   return sortedTransactions;

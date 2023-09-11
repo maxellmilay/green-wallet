@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { defaultModalType, defaultModalFunction } from '../constants/defaults';
 import useTransactionStore from './useTransactionStore';
-import { TTransaction, TTransactionItem } from '../types/TTransaction';
+import { TItem, TGroup } from '../types/TTransaction';
 import Types from '../enums/types';
 import Store from '../enums/store';
 
@@ -13,7 +13,7 @@ const useModalStore = defineStore({
     selectedModalFunction: defaultModalFunction,
   }),
   actions: {
-    openItemModal(modalFunction: string, item: TTransactionItem) {
+    openItemModal(modalFunction: string, item: TItem) {
       if (this.isModalOpen) {
         return;
       }
@@ -25,7 +25,7 @@ const useModalStore = defineStore({
       this.selectedModalFunction = modalFunction;
       this.isModalOpen = true;
     },
-    openTransactionModal(modalFunction: string, transaction: TTransaction) {
+    openTransactionModal(modalFunction: string, transaction: TGroup) {
       if (this.isModalOpen) {
         return;
       }

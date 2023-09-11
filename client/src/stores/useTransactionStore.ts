@@ -1,23 +1,22 @@
 import { defineStore } from 'pinia';
-import { TTransaction, TTransactionItem } from '../types/TTransaction';
+import { TItem, TGroup } from '../types/TTransaction';
 import Store from '../enums/store';
 import sortTransactions from '../helper/sortTransaction';
 
 const useTransactionStore = defineStore({
   id: Store.TRANSACTION,
   state: () => ({
-    selectedTransaction: {} as TTransaction,
-    selectedItem: {} as TTransactionItem,
+    selectedTransaction: {} as TGroup,
+    selectedItem: {} as TItem,
   }),
-  getters: {
-    sortedSelectedTransaction: (state) =>
-      sortTransactions(state.selectedTransaction.influx, state.selectedTransaction.outflux),
-  },
+  // getters: {
+  //   sortedSelectedTransaction: (state) => sortTransactions(state.selectedTransaction),
+  // },
   actions: {
-    setSelectedTransaction(transaction: TTransaction) {
+    setSelectedTransaction(transaction: TGroup) {
       this.selectedTransaction = transaction;
     },
-    setSelectedItem(item: TTransactionItem) {
+    setSelectedItem(item: TItem) {
       this.selectedItem = item;
     },
   },

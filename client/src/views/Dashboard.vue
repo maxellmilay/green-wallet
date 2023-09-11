@@ -3,9 +3,17 @@
     <h2 class="font-karla text-white text-4xl text-center md:text-left">Dashboard</h2>
     <div class="flex flex-col md:flex-row grow gap-10 py-10">
       <section class="flex flex-col items-center md:h-full gap-y-12">
-        <SummaryItem :icon="SunIcon" :name="Summary.BALANCE" :value="balance" />
-        <SummaryItem :icon="ShoppingCartIcon" :name="Summary.EXPENSES" :value="expenses" />
-        <SummaryItem :icon="CurrencyDollarIcon" :name="Summary.INCOME" :value="income" />
+        <SummaryItem :icon="SunIcon" :name="Summary.BALANCE" :value="profileData.balance" />
+        <SummaryItem
+          :icon="ShoppingCartIcon"
+          :name="Summary.EXPENSES"
+          :value="profileData.expenses"
+        />
+        <SummaryItem
+          :icon="CurrencyDollarIcon"
+          :name="Summary.INCOME"
+          :value="profileData.income"
+        />
       </section>
       <section class="flex flex-col md:h-full md:grow h-[30rem] px-[10%] md:px-0">
         <div class="flex flex-col lg:flex-row justify-between mb-5 relative">
@@ -25,9 +33,9 @@
           class="flex flex-col basis-0 pr-5 gap-5 grow overflow-y-auto scrollbar-thumb-white scrollbar-track-black/70 scrollbar-thin"
         >
           <TransactionPreviewItem
-            :amount="transaction.value"
+            :amount="transaction.amount"
             :description="transaction.name"
-            v-for="transaction in sortedSelectedTransaction"
+            v-for="transaction in transactions"
           />
         </div>
       </section>
@@ -36,27 +44,91 @@
 </template>
 
 <script setup lang="ts">
-import { SunIcon, ShoppingCartIcon, CurrencyDollarIcon, ChevronDownIcon } from '@heroicons/vue/24/solid';
+import {
+  SunIcon,
+  ShoppingCartIcon,
+  CurrencyDollarIcon,
+  ChevronDownIcon,
+} from '@heroicons/vue/24/solid';
 import TransactionPreviewItem from '../components/TransactionPreviewItem.vue';
 import SummaryItem from '../components/SummaryItem.vue';
-import mockData from '../mockData';
 import Summary from '../enums/summary';
 import { defaultTransactionIndex } from '../constants/defaults';
 import useTransactionStore from '../stores/useTransactionStore';
 import { storeToRefs } from 'pinia';
-import { ref } from 'vue';
+import { ref, Ref, inject } from 'vue';
 import TransactionDropdown from '../components/TransactionDropdown.vue';
-
-const userData = mockData.user.data;
-const { balance, expenses, income, transactions } = userData;
+import axios, { AxiosResponse, AxiosError } from 'axios';
+import { TUser } from '../types/TUser';
+import { VueCookies } from 'vue-cookies';
+import { TGroup, TItem } from '../types/TTransaction';
 
 const isDropdownOpen = ref(false);
 const transactionStore = useTransactionStore();
-const { sortedSelectedTransaction, selectedTransaction } = storeToRefs(transactionStore);
+const { selectedTransaction } = storeToRefs(transactionStore);
 
-transactionStore.setSelectedTransaction(transactions[defaultTransactionIndex]);
+const transactions = ref([] as TItem[]);
+const groups = ref([] as TGroup[]);
+
+await axios
+  .get('/transaction/group')
+  .then((response: AxiosResponse) => {
+    const dbInfo = response.data as TGroup[];
+    transactionStore.setSelectedTransaction(dbInfo[defaultTransactionIndex]);
+    groups.value = dbInfo;
+  })
+  .catch((error: AxiosError) => {
+    console.log(error);
+  });
+
+await axios
+  .get(`/transaction/list/${selectedTransaction.value.name}`)
+  .then((response: AxiosResponse) => {
+    const dbInfo = response.data as TItem[];
+    transactions.value = dbInfo;
+  })
+  .catch((error: AxiosError) => {
+    console.log(error);
+  });
 
 const dropDownClick = () => {
   isDropdownOpen.value = !isDropdownOpen.value;
+  if (isDropdownOpen) {
+    axios
+      .get(`/transaction/list/${selectedTransaction.value.name}`)
+      .then((response: AxiosResponse) => {
+        const dbInfo = response.data as TItem[];
+        transactions.value = dbInfo;
+      })
+      .catch((error: AxiosError) => {
+        console.log(error);
+      });
+  }
 };
+
+const $cookies = inject<VueCookies>('$cookies');
+
+const config = {
+  headers: { Authorization: `Bearer ${$cookies?.get('Token')}` },
+};
+
+const profileData: Ref<TUser> = ref({} as TUser);
+
+await axios
+  .get('/social_auth/user', config)
+  .then((response: AxiosResponse) => {
+    const dbUserInfo = response.data;
+    profileData.value = {
+      firstName: dbUserInfo.first_name,
+      lastName: dbUserInfo.last_name,
+      email: dbUserInfo.email,
+      picture: dbUserInfo.picture,
+      balance: dbUserInfo.balance,
+      expenses: dbUserInfo.expenses,
+      income: dbUserInfo.income,
+    };
+  })
+  .catch((error: AxiosError) => {
+    console.log(error);
+  });
 </script>

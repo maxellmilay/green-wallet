@@ -19,12 +19,12 @@
           <PlusIcon class="h-6 w-6 text-white" />
         </button>
         <button
-          v-for="transaction in userTransactions"
+          v-for="group in groups"
           class="py-2 px-4 text-[0.65rem] border-2 border-site-gray hover:bg-white/20 duration-200"
-          :class="handleCurrentTransactionCheck(transaction) ? 'bg-white/20' : 'bg-black'"
-          @click="transactionStore.setSelectedTransaction(transaction)"
+          :class="handleCurrentTransactionCheck(group) ? 'bg-white/20' : 'bg-black'"
+          @click="transactionStore.setSelectedTransaction(group)"
         >
-          {{ transaction.name }}
+          {{ group.name }}
         </button>
       </div>
       <div class="flex justify-end md:justify-center gap-4 h-fit mb-4 md:mb-0">
@@ -58,25 +58,47 @@ import Outflux from '../components/Outflux.vue';
 import TransactionItemModal from '../components/modals/TransactionItemModal.vue';
 import TransactionModal from '../components/modals/TransactionModal.vue';
 import mockData from '../mockData';
-import { TTransaction } from '../types/TTransaction';
+import { TGroup, TItem } from '../types/TTransaction';
 import { defaultTransaction, defaultTransactionIndex } from '../constants/defaults';
 import Types from '../enums/types';
 import useTransactionStore from '../stores/useTransactionStore';
 import useModalStore from '../stores/useModalStore';
 import { storeToRefs } from 'pinia';
 import exportFromJSON from 'export-from-json';
-import sortTransactions from '../helper/sortTransaction';
-
-const userTransactions = mockData.user.data.transactions;
+import { ref } from 'vue';
+import axios, { AxiosResponse, AxiosError } from 'axios';
 
 const transactionStore = useTransactionStore();
 const { selectedTransaction } = storeToRefs(transactionStore);
+
+const transactions = ref([] as TItem[]);
+const groups = ref([] as TGroup[]);
+
+await axios
+  .get('/transaction/group')
+  .then((response: AxiosResponse) => {
+    const dbInfo = response.data as TGroup[];
+    transactionStore.setSelectedTransaction(dbInfo[defaultTransactionIndex]);
+    groups.value = dbInfo;
+  })
+  .catch((error: AxiosError) => {
+    console.log(error);
+  });
+
+await axios
+  .get(`/transaction/list/${selectedTransaction.value.name}`)
+  .then((response: AxiosResponse) => {
+    const dbInfo = response.data as TItem[];
+    transactions.value = dbInfo;
+  })
+  .catch((error: AxiosError) => {
+    console.log(error);
+  });
+
 const modalStore = useModalStore();
 const { isModalOpen, selectedModalType } = storeToRefs(modalStore);
 
-transactionStore.setSelectedTransaction(userTransactions[defaultTransactionIndex]);
-
-const handleCurrentTransactionCheck = (transaction: TTransaction) => {
+const handleCurrentTransactionCheck = (transaction: TGroup) => {
   if (!transaction.name || !selectedTransaction) {
     return false;
   }
@@ -88,10 +110,7 @@ const handleCurrentTransactionCheck = (transaction: TTransaction) => {
 };
 
 const handleExportClick = () => {
-  const data = sortTransactions(
-    selectedTransaction.value.influx,
-    selectedTransaction.value.outflux
-  );
+  const data = selectedTransaction;
   const fileName = selectedTransaction.value.name;
   const exportType = exportFromJSON.types.csv;
   exportFromJSON({ data, fileName, exportType });
