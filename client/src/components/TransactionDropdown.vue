@@ -15,10 +15,9 @@
 </template>
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import mockData from '../mockData';
 import useTransactionStore from '../stores/useTransactionStore';
 import { TGroup } from '../types/TTransaction';
-import axios, { Axios, AxiosError, AxiosResponse } from 'axios';
+import axios, { AxiosError, AxiosResponse } from 'axios';
 
 const transactions = ref([] as any);
 

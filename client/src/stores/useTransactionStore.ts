@@ -9,9 +9,6 @@ const useTransactionStore = defineStore({
     selectedTransaction: {} as TGroup,
     selectedItem: {} as TItem,
   }),
-  // getters: {
-  //   sortedSelectedTransaction: (state) => sortTransactions(state.selectedTransaction),
-  // },
   actions: {
     setSelectedTransaction(transaction: TGroup) {
       this.selectedTransaction = transaction;

@@ -19,7 +19,7 @@
         id="transaction-amount"
         type="number"
         class="w-[55%] lg:w-[60%] bg-black border border-site-gray rounded px-3 py-2 md:p-4"
-        v-model="item.value"
+        v-model="item.amount"
         key="Amount"
       />
     </div>
@@ -27,13 +27,23 @@
       <button
         class="text-site-red border border-site-red hover:bg-site-green/20 px-4 py-2 rounded"
         v-if="selectedModalFunction === Types.UPDATE"
+        @click="handleDeleteItemClick"
       >
         Delete
       </button>
       <button
         class="text-site-green border border-site-green hover:bg-site-green/20 px-4 py-2 rounded"
+        v-if="selectedModalFunction === Types.UPDATE"
+        @click="handleUpdateItemClick"
       >
-        {{ selectedModalFunction }}
+        Update
+      </button>
+      <button
+        class="text-site-green border border-site-green hover:bg-site-green/20 px-4 py-2 rounded"
+        v-if="selectedModalFunction === Types.ADD"
+        @click="handleAddItemClick"
+      >
+        Add
       </button>
     </div>
   </ModalLayout>
@@ -44,24 +54,63 @@ import useTransactionStore from '../../stores/useTransactionStore';
 import { storeToRefs } from 'pinia';
 import useModalStore from '../../stores/useModalStore';
 import Types from '../../enums/types';
-import { computed } from 'vue';
 import { defaultInputString, defaultInputNumber } from '../../constants/defaults';
+import { ref, watch } from 'vue';
+import axios, { AxiosError } from 'axios';
 
 const transactionStore = useTransactionStore();
 const modalStore = useModalStore();
-const { selectedItem } = storeToRefs(transactionStore);
+const { selectedItem, selectedTransaction } = storeToRefs(transactionStore);
 const { selectedModalFunction } = storeToRefs(modalStore);
 
-const item = computed(() => {
-  const item = {
-    name: defaultInputString,
-    value: defaultInputNumber,
-  };
-  if (selectedModalFunction.value === Types.UPDATE) {
-    item.name = selectedItem.value.name;
-    item.value = selectedItem.value.value;
-  }
+const defaultItem =
+  selectedModalFunction.value === Types.UPDATE
+    ? { name: selectedItem.value.name, amount: selectedItem.value.amount }
+    : {
+        name: defaultInputString,
+        amount: defaultInputNumber,
+      };
 
-  return item;
-});
+const item = ref(defaultItem);
+
+const handleAddItemClick = async () => {
+  await axios
+    .post('/transaction/create-transaction', {
+      name: item.value.name,
+      amount: item.value.amount,
+      group: selectedTransaction.value.uuid,
+    })
+    .then(() => {
+      modalStore.closeModal();
+    })
+    .catch((error: AxiosError) => {
+      console.log(error);
+    });
+};
+
+const handleUpdateItemClick = async () => {
+  await axios
+    .put(`/transaction/${selectedItem.value.uuid}`, {
+      name: item.value.name,
+      amount: item.value.amount,
+      group: selectedTransaction.value.uuid,
+    })
+    .then(() => {
+      modalStore.closeModal();
+    })
+    .catch((error: AxiosError) => {
+      console.log(error);
+    });
+};
+
+const handleDeleteItemClick = async () => {
+  await axios
+    .delete(`/transaction/${selectedItem.value.uuid}`)
+    .then(() => {
+      modalStore.closeModal();
+    })
+    .catch((error: AxiosError) => {
+      console.log(error);
+    });
+};
 </script>

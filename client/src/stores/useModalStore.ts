@@ -29,10 +29,6 @@ const useModalStore = defineStore({
       if (this.isModalOpen) {
         return;
       }
-      const { setSelectedTransaction } = useTransactionStore();
-      if (modalFunction === Types.UPDATE) {
-        setSelectedTransaction(transaction);
-      }
       this.selectedModalFunction = modalFunction;
       this.selectedModalType = Types.TRANSACTION;
       this.isModalOpen = true;

@@ -17,13 +17,23 @@
       <button
         class="text-site-red border border-site-red hover:bg-site-green/20 px-4 py-2 rounded"
         v-if="selectedModalFunction === 'Update'"
+        @click="handleDeleteGroupClick"
       >
         Delete
       </button>
       <button
         class="text-site-green border border-site-green hover:bg-site-green/20 px-4 py-2 rounded"
+        v-if="selectedModalFunction === 'Update'"
+        @click="handleUpdateGroupClick"
       >
-        {{ selectedModalFunction }}
+        Update
+      </button>
+      <button
+        class="text-site-green border border-site-green hover:bg-site-green/20 px-4 py-2 rounded"
+        v-if="selectedModalFunction === 'Add'"
+        @click="handleAddGroupClick"
+      >
+        Add
       </button>
     </div></ModalLayout
   >
@@ -33,20 +43,56 @@ import { storeToRefs } from 'pinia';
 import useModalStore from '../../stores/useModalStore';
 import useTransactionStore from '../../stores/useTransactionStore';
 import ModalLayout from './ModalLayout.vue';
-import Types from '../../enums/types';
-import { computed } from 'vue';
+import { ref, computed } from 'vue';
 import { defaultInputString } from '../../constants/defaults';
+import axios, { AxiosError } from 'axios';
+import useUserStore from '../../stores/useUserStore';
+import Types from '../../enums/types';
 
 const transactionStore = useTransactionStore();
 const { selectedTransaction } = storeToRefs(transactionStore);
 const modalStore = useModalStore();
 const { selectedModalFunction } = storeToRefs(modalStore);
+const { user } = useUserStore();
 
-const name = computed(() => {
-  if (selectedModalFunction.value === Types.UPDATE) {
-    return selectedTransaction.value.name;
-  } else {
-    return defaultInputString;
-  }
-});
+const defaultName =
+  selectedModalFunction.value === Types.ADD ? defaultInputString : selectedTransaction.value.name;
+
+const name = ref(defaultName);
+
+const handleAddGroupClick = async () => {
+  await axios
+    .post('/transaction/create-group', { name: name.value, owner: user.uuid })
+    .then(() => {
+      modalStore.closeModal();
+    })
+    .catch((error: AxiosError) => {
+      console.log(error);
+    });
+};
+
+const handleUpdateGroupClick = async () => {
+  await axios
+    .put(`/transaction/group/${selectedTransaction.value.uuid}`, {
+      name: name.value,
+      owner: user.uuid,
+    })
+    .then(() => {
+      modalStore.closeModal();
+    })
+    .catch((error: AxiosError) => {
+      console.log(error);
+    });
+};
+
+const handleDeleteGroupClick = async () => {
+  await axios
+    .delete(`/transaction/group/${selectedTransaction.value.uuid}`)
+    .then(() => {
+      modalStore.closeModal();
+    })
+    .catch((error: AxiosError) => {
+      console.log(error);
+    });
+};
 </script>

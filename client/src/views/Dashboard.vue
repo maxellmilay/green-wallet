@@ -62,6 +62,7 @@ import axios, { AxiosResponse, AxiosError } from 'axios';
 import { TUser } from '../types/TUser';
 import { VueCookies } from 'vue-cookies';
 import { TGroup, TItem } from '../types/TTransaction';
+import useUserStore from '../stores/useUserStore';
 
 const isDropdownOpen = ref(false);
 const transactionStore = useTransactionStore();
@@ -112,13 +113,16 @@ const config = {
   headers: { Authorization: `Bearer ${$cookies?.get('Token')}` },
 };
 
-const profileData: Ref<TUser> = ref({} as TUser);
+const profileData = ref({} as TUser);
+
+const { user, setUser } = useUserStore();
 
 await axios
   .get('/social_auth/user', config)
   .then((response: AxiosResponse) => {
     const dbUserInfo = response.data;
     profileData.value = {
+      uuid: dbUserInfo.uuid,
       firstName: dbUserInfo.first_name,
       lastName: dbUserInfo.last_name,
       email: dbUserInfo.email,
@@ -126,7 +130,9 @@ await axios
       balance: dbUserInfo.balance,
       expenses: dbUserInfo.expenses,
       income: dbUserInfo.income,
+      created: dbUserInfo.created,
     };
+    setUser(profileData.value);
   })
   .catch((error: AxiosError) => {
     console.log(error);

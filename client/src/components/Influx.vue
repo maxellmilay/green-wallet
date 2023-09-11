@@ -7,7 +7,7 @@
       :name="item.name"
       :amount="item.amount"
       v-for="item in transactions"
-      @click="openItemModal(Types.UPDATE, item)"
+      @click="modalStore.openItemModal(Types.UPDATE, item)"
     />
   </FluxLayout>
 </template>
@@ -19,12 +19,13 @@ import useTransactionStore from '../stores/useTransactionStore';
 import { storeToRefs } from 'pinia';
 import useModalStore from '../stores/useModalStore';
 import { TItem } from '../types/TTransaction';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import axios, { AxiosResponse, AxiosError } from 'axios';
 
 const transactionStore = useTransactionStore();
 const { selectedTransaction } = storeToRefs(transactionStore);
-const { openItemModal } = useModalStore();
+const modalStore = useModalStore();
+const { isModalOpen, selectedModalType } = storeToRefs(modalStore);
 
 const transactions = ref([] as TItem[]);
 
@@ -39,4 +40,34 @@ await axios
   .catch((error: AxiosError) => {
     console.log(error);
   });
+
+watch(selectedTransaction, async () => {
+  await axios
+    .get(`/transaction/list/${selectedTransaction.value.name}`)
+    .then((response: AxiosResponse) => {
+      const dbInfo = response.data as TItem[];
+      transactions.value = dbInfo.filter((info) => {
+        return info.amount > 0;
+      });
+    })
+    .catch((error: AxiosError) => {
+      console.log(error);
+    });
+});
+
+watch(isModalOpen, async (__new, __old) => {
+  if (selectedModalType.value === Types.ITEM && !__new && __old) {
+    await axios
+      .get(`/transaction/list/${selectedTransaction.value.name}`)
+      .then((response: AxiosResponse) => {
+        const dbInfo = response.data as TItem[];
+        transactions.value = dbInfo.filter((info) => {
+          return info.amount > 0;
+        });
+      })
+      .catch((error: AxiosError) => {
+        console.log(error);
+      });
+  }
+});
 </script>

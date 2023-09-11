@@ -22,7 +22,7 @@
           v-for="group in groups"
           class="py-2 px-4 text-[0.65rem] border-2 border-site-gray hover:bg-white/20 duration-200"
           :class="handleCurrentTransactionCheck(group) ? 'bg-white/20' : 'bg-black'"
-          @click="transactionStore.setSelectedTransaction(group)"
+          @click="handleGroupTabClick(group)"
         >
           {{ group.name }}
         </button>
@@ -43,8 +43,22 @@
       </div>
     </div>
     <div class="flex flex-col md:flex-row font-montserrat mb-5">
-      <Influx />
-      <Outflux />
+      <Suspense>
+        <template #default>
+          <Influx />
+        </template>
+        <template #fallback>
+          <FluxFallback :fluxType="Types.INFLUX" />
+        </template>
+      </Suspense>
+      <Suspense>
+        <template #default>
+          <Outflux />
+        </template>
+        <template #fallback>
+          <FluxFallback :fluxType="Types.OUTFLUX" />
+        </template>
+      </Suspense>
     </div>
   </section>
   <TransactionItemModal v-if="isModalOpen && selectedModalType === Types.ITEM" />
@@ -59,20 +73,61 @@ import TransactionItemModal from '../components/modals/TransactionItemModal.vue'
 import TransactionModal from '../components/modals/TransactionModal.vue';
 import mockData from '../mockData';
 import { TGroup, TItem } from '../types/TTransaction';
+import { TUser } from '../types/TUser';
 import { defaultTransaction, defaultTransactionIndex } from '../constants/defaults';
 import Types from '../enums/types';
 import useTransactionStore from '../stores/useTransactionStore';
 import useModalStore from '../stores/useModalStore';
 import { storeToRefs } from 'pinia';
 import exportFromJSON from 'export-from-json';
-import { ref } from 'vue';
+import { ref, watch, inject } from 'vue';
 import axios, { AxiosResponse, AxiosError } from 'axios';
+import { VueCookies } from 'vue-cookies';
+import useUserStore from '../stores/useUserStore';
+import FluxFallback from '../components/fallback/FluxFallback.vue';
 
 const transactionStore = useTransactionStore();
 const { selectedTransaction } = storeToRefs(transactionStore);
+const modalStore = useModalStore();
+const { isModalOpen, selectedModalType } = storeToRefs(modalStore);
 
 const transactions = ref([] as TItem[]);
 const groups = ref([] as TGroup[]);
+
+watch(selectedTransaction, (__new, __old) => {
+  console.log(__new.name);
+});
+
+const $cookies = inject<VueCookies>('$cookies');
+
+const config = {
+  headers: { Authorization: `Bearer ${$cookies?.get('Token')}` },
+};
+
+const profileData = ref({} as TUser);
+
+const { setUser } = useUserStore();
+
+await axios
+  .get('/social_auth/user', config)
+  .then((response: AxiosResponse) => {
+    const dbUserInfo = response.data;
+    profileData.value = {
+      uuid: dbUserInfo.uuid,
+      firstName: dbUserInfo.first_name,
+      lastName: dbUserInfo.last_name,
+      email: dbUserInfo.email,
+      picture: dbUserInfo.picture,
+      balance: dbUserInfo.balance,
+      expenses: dbUserInfo.expenses,
+      income: dbUserInfo.income,
+      created: dbUserInfo.created,
+    };
+    setUser(profileData.value);
+  })
+  .catch((error: AxiosError) => {
+    console.log(error);
+  });
 
 await axios
   .get('/transaction/group')
@@ -95,8 +150,19 @@ await axios
     console.log(error);
   });
 
-const modalStore = useModalStore();
-const { isModalOpen, selectedModalType } = storeToRefs(modalStore);
+watch(isModalOpen, async (__new, __old) => {
+  if (selectedModalType.value === Types.TRANSACTION && !__new && __old) {
+    await axios
+      .get('/transaction/group')
+      .then((response: AxiosResponse) => {
+        const dbInfo = response.data as TGroup[];
+        groups.value = dbInfo;
+      })
+      .catch((error: AxiosError) => {
+        console.log(error);
+      });
+  }
+});
 
 const handleCurrentTransactionCheck = (transaction: TGroup) => {
   if (!transaction.name || !selectedTransaction) {
@@ -110,9 +176,13 @@ const handleCurrentTransactionCheck = (transaction: TGroup) => {
 };
 
 const handleExportClick = () => {
-  const data = selectedTransaction;
+  const data = transactions.value;
   const fileName = selectedTransaction.value.name;
   const exportType = exportFromJSON.types.csv;
   exportFromJSON({ data, fileName, exportType });
+};
+
+const handleGroupTabClick = (group: TGroup) => {
+  transactionStore.setSelectedTransaction(group);
 };
 </script>

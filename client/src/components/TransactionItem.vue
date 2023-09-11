@@ -12,7 +12,6 @@
 import { computed, ref, watch } from 'vue';
 import useModalStore from '../stores/useModalStore';
 import useTransactionStore from '../stores/useTransactionStore';
-import { TTransactionItem } from '../types/TTransaction';
 
 const { openItemModal } = useModalStore();
 const { setSelectedItem } = useTransactionStore();

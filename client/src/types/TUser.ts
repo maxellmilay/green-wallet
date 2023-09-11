@@ -1,4 +1,5 @@
 export type TUser = {
+  uuid: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -6,4 +7,5 @@ export type TUser = {
   balance: number;
   expenses: number;
   income: number;
+  created: string;
 };
