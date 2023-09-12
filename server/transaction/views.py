@@ -4,6 +4,7 @@ from django.db.models import Q, Sum
 
 from .models import Transaction, TransactionGroup
 from .serializers import TransactionSerializer, TransactionGroupSerializer
+from social_auth.models import GoogleUser
 
 class ListTransactions(ListAPIView):
     serializer_class = TransactionSerializer
@@ -22,20 +23,26 @@ class ListGroups(ListAPIView):
         #pylint: disable=E1101
         groups = TransactionGroup.objects.filter(owner__uuid=uuid)
         for group in groups:
-            transactions = Transaction.objects.filter(group=group.uuid)
-            if transactions.count() != 0:
-                
-                group.income = transactions.aggregate(value=Sum('amount',filter=Q(amount__gt=0))).get('value')
-                group.expenses = transactions.aggregate(value=Sum('amount',filter=Q(amount__lt=0))).get('value')
-                if group.income is None:
-                    group.income = 0
+            transactions = Transaction.objects.filter(group=group.uuid)     
+
+            group.income = transactions.aggregate(value=Sum('amount',filter=Q(amount__gt=0))).get('value')
+            group.expenses = transactions.aggregate(value=Sum('amount',filter=Q(amount__lt=0))).get('value')
+            
+            if group.income is None:
+                group.income = 0
+                if group.expenses is None:
+                    group.expenses = 0
+                    group.balance = 0
+                else:
                     group.balance = group.expenses
+            else:
                 if group.expenses is None:
                     group.expenses = 0
                     group.balance = group.income
-                if group.income is not None and group.expenses is not None:
+                else:
                     group.balance = transactions.aggregate(value=Sum('amount')).get('value')
-                group.save()
+
+            group.save()
         return groups
 
 class TransactionDetail(RetrieveUpdateDestroyAPIView):

@@ -35,18 +35,25 @@ class GetUserData(RetrieveAPIView):
         user = GoogleUser.objects.get(email=email)
 
         transactions = Transaction.objects.filter(group__owner__email=email)
-        if transactions.count() != 0:
-            user.income = transactions.aggregate(value=Sum('amount',filter=Q(amount__gt=0))).get('value')
-            user.expenses = transactions.aggregate(value=Sum('amount',filter=Q(amount__lt=0))).get('value')
-            if user.income is None:
-                user.income = 0
+        
+        user.income = transactions.aggregate(value=Sum('amount',filter=Q(amount__gt=0))).get('value')
+        user.expenses = transactions.aggregate(value=Sum('amount',filter=Q(amount__lt=0))).get('value')
+
+        if user.income is None:
+            user.income = 0
+            if user.expenses is None:
+                user.expenses = 0
+                user.balance = 0
+            else:
                 user.balance = user.expenses
+        else:
             if user.expenses is None:
                 user.expenses = 0
                 user.balance = user.income
-            if user.expenses is not None and user.income is not None:
+            else:
                 user.balance = transactions.aggregate(value=Sum('amount')).get('value')
-            user.save()
+                
+        user.save()
 
         serializer = GoogleUserSerializer(user)
 
