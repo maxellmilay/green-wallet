@@ -41,10 +41,10 @@ class GetUserData(RetrieveAPIView):
             if user.income is None:
                 user.income = 0
                 user.balance = user.expenses
-            elif user.expenses is None:
+            if user.expenses is None:
                 user.expenses = 0
                 user.balance = user.income
-            else:
+            if user.expenses is not None and user.income is not None:
                 user.balance = transactions.aggregate(value=Sum('amount')).get('value')
             user.save()
 

@@ -30,10 +30,10 @@ class ListGroups(ListAPIView):
                 if group.income is None:
                     group.income = 0
                     group.balance = group.expenses
-                elif group.expenses is None:
+                if group.expenses is None:
                     group.expenses = 0
                     group.balance = group.income
-                else:
+                if group.income is not None and group.expenses is not None:
                     group.balance = transactions.aggregate(value=Sum('amount')).get('value')
                 group.save()
         return groups

@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col w-[90%] py-6 md:h-full">
     <h2 class="font-karla text-white text-4xl text-center md:text-left">Dashboard</h2>
-    <div class="flex flex-col md:flex-row grow gap-10 py-10">
+    <div class="flex flex-col md:flex-row grow gap-10 py-10" v-if="groups.length !== 0">
       <section class="flex flex-col items-center md:h-full gap-y-12">
         <SummaryItem :icon="SunIcon" :name="Summary.BALANCE" :value="selectedTransaction.balance" />
         <SummaryItem
@@ -30,7 +30,7 @@
           <TransactionDropdown v-if="isDropdownOpen" @close-dropdown="dropDownClick" />
         </div>
         <div
-          class="flex flex-col basis-0 pr-5 gap-5 grow overflow-y-auto scrollbar-thumb-white scrollbar-track-black/70 scrollbar-thin"
+          class="flex flex-col basis-0 gap-5 grow overflow-y-auto scrollbar-thumb-white scrollbar-track-black/70 scrollbar-thin"
         >
           <TransactionPreviewItem
             :amount="transaction.amount"
@@ -40,6 +40,7 @@
         </div>
       </section>
     </div>
+    <div v-else><h1>Empty</h1></div>
   </div>
 </template>
 
@@ -75,49 +76,6 @@ const profileData = ref({} as TUser);
 const userModal = useUserStore();
 const { user } = storeToRefs(userModal);
 
-watch(user, async (__new, __old) => {
-  await axios
-    .get(`/transaction/list/group/${__new.uuid}`)
-    .then((response: AxiosResponse) => {
-      const dbInfo = response.data as TGroup[];
-      transactionStore.setSelectedTransaction(dbInfo[defaultTransactionIndex]);
-      groups.value = dbInfo;
-    })
-    .catch((error: AxiosError) => {
-      console.log(error);
-    });
-});
-
-watch(selectedTransaction, async (__new, __old) => {
-  await axios
-    .get(`/transaction/list/${__new.name}`)
-    .then((response: AxiosResponse) => {
-      const dbInfo = response.data as TItem[];
-      transactions.value = dbInfo;
-    })
-    .catch((error: AxiosError) => {
-      console.log(error);
-    });
-});
-
-const dropDownClick = () => {
-  console.log('CLICKED', isDropdownOpen.value);
-
-  isDropdownOpen.value = !isDropdownOpen.value;
-  console.log('AFTER', isDropdownOpen.value);
-  if (isDropdownOpen) {
-    axios
-      .get(`/transaction/list/${selectedTransaction.value.name}`)
-      .then((response: AxiosResponse) => {
-        const dbInfo = response.data as TItem[];
-        transactions.value = dbInfo;
-      })
-      .catch((error: AxiosError) => {
-        console.log(error);
-      });
-  }
-};
-
 const $cookies = inject<VueCookies>('$cookies');
 
 const config = {
@@ -144,4 +102,67 @@ await axios
   .catch((error: AxiosError) => {
     console.log(error);
   });
+
+await axios
+  .get(`/transaction/list/group/${user.value.uuid}`)
+  .then((response: AxiosResponse) => {
+    const dbInfo = response.data as TGroup[];
+    transactionStore.setSelectedTransaction(dbInfo[defaultTransactionIndex]);
+    groups.value = dbInfo;
+  })
+  .catch((error: AxiosError) => {
+    console.log(error);
+  });
+
+if (selectedTransaction.value) {
+  await axios
+    .get(`/transaction/list/${selectedTransaction.value.name}`)
+    .then((response: AxiosResponse) => {
+      const dbInfo = response.data as TItem[];
+      transactions.value = dbInfo;
+    })
+    .catch((error: AxiosError) => {
+      console.log(error);
+    });
+}
+
+watch(user, async (__new, __old) => {
+  await axios
+    .get(`/transaction/list/group/${__new.uuid}`)
+    .then((response: AxiosResponse) => {
+      const dbInfo = response.data as TGroup[];
+      transactionStore.setSelectedTransaction(dbInfo[defaultTransactionIndex]);
+      groups.value = dbInfo;
+    })
+    .catch((error: AxiosError) => {
+      console.log(error);
+    });
+});
+
+watch(selectedTransaction, async (__new, __old) => {
+  await axios
+    .get(`/transaction/list/${__new.name}`)
+    .then((response: AxiosResponse) => {
+      const dbInfo = response.data as TItem[];
+      transactions.value = dbInfo;
+    })
+    .catch((error: AxiosError) => {
+      console.log(error);
+    });
+});
+
+const dropDownClick = async () => {
+  isDropdownOpen.value = !isDropdownOpen.value;
+  if (isDropdownOpen && selectedTransaction.value !== ({} as TGroup)) {
+    await axios
+      .get(`/transaction/list/${selectedTransaction.value.name}`)
+      .then((response: AxiosResponse) => {
+        const dbInfo = response.data as TItem[];
+        transactions.value = dbInfo;
+      })
+      .catch((error: AxiosError) => {
+        console.log(error);
+      });
+  }
+};
 </script>

@@ -45,9 +45,10 @@ import useTransactionStore from '../../stores/useTransactionStore';
 import ModalLayout from './ModalLayout.vue';
 import { ref, computed } from 'vue';
 import { defaultInputString } from '../../constants/defaults';
-import axios, { AxiosError } from 'axios';
+import axios, { AxiosError, AxiosResponse } from 'axios';
 import useUserStore from '../../stores/useUserStore';
 import Types from '../../enums/types';
+import { TGroup } from '../../types/TTransaction';
 
 const transactionStore = useTransactionStore();
 const { selectedTransaction } = storeToRefs(transactionStore);
@@ -90,6 +91,12 @@ const handleDeleteGroupClick = async () => {
     .delete(`/transaction/group/${selectedTransaction.value.uuid}`)
     .then(() => {
       modalStore.closeModal();
+    })
+    .then(async () => {
+      await axios.get(`transaction/list/group/${user.uuid}`).then((response: AxiosResponse) => {
+        const dbData = response.data;
+        transactionStore.setSelectedTransaction(dbData[0]);
+      });
     })
     .catch((error: AxiosError) => {
       console.log(error);

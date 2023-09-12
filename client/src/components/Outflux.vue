@@ -19,7 +19,7 @@ import useTransactionStore from '../stores/useTransactionStore';
 import { storeToRefs } from 'pinia';
 import useModalStore from '../stores/useModalStore';
 import { ref, watch } from 'vue';
-import { TItem } from '../types/TTransaction';
+import { TGroup, TItem } from '../types/TTransaction';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 
 const transactionStore = useTransactionStore();
@@ -29,17 +29,19 @@ const { isModalOpen, selectedModalType } = storeToRefs(modalStore);
 
 const transactions = ref([] as TItem[]);
 
-await axios
-  .get(`/transaction/list/${selectedTransaction.value.name}`)
-  .then((response: AxiosResponse) => {
-    const dbInfo = response.data as TItem[];
-    transactions.value = dbInfo.filter((info) => {
-      return info.amount < 0;
+if (selectedTransaction.value) {
+  await axios
+    .get(`/transaction/list/${selectedTransaction.value.name}`)
+    .then((response: AxiosResponse) => {
+      const dbInfo = response.data as TItem[];
+      transactions.value = dbInfo.filter((info) => {
+        return info.amount < 0;
+      });
+    })
+    .catch((error: AxiosError) => {
+      console.log(error);
     });
-  })
-  .catch((error: AxiosError) => {
-    console.log(error);
-  });
+}
 
 watch(selectedTransaction, async () => {
   await axios

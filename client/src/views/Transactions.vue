@@ -4,7 +4,10 @@
     class="flex flex-col md:flex-row justify-between items-center w-full mb-5"
   >
     <h2 class="font-karla text-2xl md:text-4xl">Transactions</h2>
-    <div class="flex flex-col items-center md:items-end">
+    <div
+      class="flex flex-col items-center md:items-end"
+      v-if="groups.length !== 0 && selectedTransaction"
+    >
       <p class="font-montserrat text-2xl text-site-green">{{ selectedTransaction.balance }}</p>
       <p class="font-karla font-thin text-xs md:text-base">Balance</p>
     </div>
@@ -21,7 +24,11 @@
         <button
           v-for="group in groups"
           class="py-2 px-4 text-[0.65rem] border-2 border-site-gray hover:bg-white/20 duration-200"
-          :class="handleCurrentTransactionCheck(group) ? 'bg-white/20' : 'bg-black'"
+          :class="
+            group.name && selectedTransaction && group.name === selectedTransaction.name
+              ? 'bg-white/20'
+              : 'bg-black'
+          "
           @click="handleGroupTabClick(group)"
         >
           {{ group.name }}
@@ -31,12 +38,14 @@
         <button
           class="border-2 text-xs text-blue-300 border-blue-300 rounded-lg px-4 py-2 bg-black hover:bg-white/10 duration-200"
           @click="handleExportClick"
+          v-if="groups.length !== 0"
         >
           Export
         </button>
         <button
           class="border-2 text-xs text-white border-white rounded-lg px-4 py-2 bg-black hover:bg-site-red/20 hover:text-white duration-200"
           @click="modalStore.openTransactionModal(Types.UPDATE, selectedTransaction)"
+          v-if="groups.length !== 0"
         >
           Edit
         </button>
@@ -71,7 +80,6 @@ import Influx from '../components/Influx.vue';
 import Outflux from '../components/Outflux.vue';
 import TransactionItemModal from '../components/modals/TransactionItemModal.vue';
 import TransactionModal from '../components/modals/TransactionModal.vue';
-import mockData from '../mockData';
 import { TGroup, TItem } from '../types/TTransaction';
 import { TUser } from '../types/TUser';
 import { defaultTransaction, defaultTransactionIndex } from '../constants/defaults';
@@ -89,7 +97,7 @@ import FluxFallback from '../components/fallback/FluxFallback.vue';
 const transactionStore = useTransactionStore();
 const { selectedTransaction } = storeToRefs(transactionStore);
 const modalStore = useModalStore();
-const { isModalOpen, selectedModalType } = storeToRefs(modalStore);
+const { isModalOpen, selectedModalType, selectedModalFunction } = storeToRefs(modalStore);
 
 const transactions = ref([] as TItem[]);
 const groups = ref([] as TGroup[]);
@@ -137,15 +145,17 @@ await axios
     console.log(error);
   });
 
-await axios
-  .get(`/transaction/list/${selectedTransaction.value.name}`)
-  .then((response: AxiosResponse) => {
-    const dbInfo = response.data as TItem[];
-    transactions.value = dbInfo;
-  })
-  .catch((error: AxiosError) => {
-    console.log(error);
-  });
+if (selectedTransaction.value) {
+  await axios
+    .get(`/transaction/list/${selectedTransaction.value.name}`)
+    .then((response: AxiosResponse) => {
+      const dbInfo = response.data as TItem[];
+      transactions.value = dbInfo;
+    })
+    .catch((error: AxiosError) => {
+      console.log(error);
+    });
+}
 
 watch(isModalOpen, async (__new, __old) => {
   if (selectedModalType.value === Types.ITEM && !__new && __old) {
@@ -177,17 +187,6 @@ watch(isModalOpen, async (__new, __old) => {
       });
   }
 });
-
-const handleCurrentTransactionCheck = (transaction: TGroup) => {
-  if (!transaction.name || !selectedTransaction) {
-    return false;
-  }
-  if (transaction.name === selectedTransaction.value.name) {
-    return true;
-  } else {
-    return false;
-  }
-};
 
 const handleExportClick = () => {
   const data = transactions.value;
