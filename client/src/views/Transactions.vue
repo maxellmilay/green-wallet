@@ -17,7 +17,7 @@
       <div class="flex flex-wrap">
         <button
           class="flex px-4 py-2 border-t-2 border-x-2 border-site-gray rounded-tl-lg hover:bg-white/10 duration-200"
-          @click="modalStore.openTransactionModal(Types.ADD, defaultTransaction)"
+          @click="modalStore.openTransactionModal(Types.ADD)"
         >
           <PlusIcon class="h-6 w-6 text-white" />
         </button>
@@ -44,7 +44,7 @@
         </button>
         <button
           class="border-2 text-xs text-white border-white rounded-lg px-4 py-2 bg-black hover:bg-site-red/20 hover:text-white duration-200"
-          @click="modalStore.openTransactionModal(Types.UPDATE, selectedTransaction)"
+          @click="modalStore.openTransactionModal(Types.UPDATE)"
           v-if="groups.length !== 0"
         >
           Edit
@@ -178,9 +178,13 @@ watch(isModalOpen, async (__new, __old) => {
       .then((response: AxiosResponse) => {
         const dbInfo = response.data as TGroup[];
         groups.value = dbInfo;
-        selectedTransaction.value = groups.value.filter((group) => {
-          return group.uuid === selectedTransaction.value.uuid;
-        })[defaultTransactionIndex];
+        if (groups.value.length === 1) {
+          selectedTransaction.value = groups.value[defaultTransactionIndex];
+        } else {
+          selectedTransaction.value = groups.value.filter((group) => {
+            return group.uuid === selectedTransaction.value.uuid;
+          })[defaultTransactionIndex];
+        }
       })
       .catch((error: AxiosError) => {
         console.log(error);

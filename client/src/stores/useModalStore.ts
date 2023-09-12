@@ -25,7 +25,7 @@ const useModalStore = defineStore({
       this.selectedModalFunction = modalFunction;
       this.isModalOpen = true;
     },
-    openTransactionModal(modalFunction: string, transaction: TGroup) {
+    openTransactionModal(modalFunction: string) {
       if (this.isModalOpen) {
         return;
       }
