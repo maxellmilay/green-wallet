@@ -8,7 +8,7 @@
 - Vue 3
 - Tailwind CSS
 
-### Frontend:
+### Backend:
 
 - Python
 - Django
