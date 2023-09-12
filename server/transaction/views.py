@@ -1,5 +1,7 @@
 from rest_framework.generics import ListAPIView,RetrieveUpdateDestroyAPIView, CreateAPIView
 
+from django.db.models import Q, Sum
+
 from .models import Transaction, TransactionGroup
 from .serializers import TransactionSerializer, TransactionGroupSerializer
 
@@ -16,8 +18,24 @@ class ListGroups(ListAPIView):
     serializer_class = TransactionGroupSerializer
 
     def get_queryset(self):
+        uuid = self.kwargs['uuid']
         #pylint: disable=E1101
-        groups = TransactionGroup.objects.all()
+        groups = TransactionGroup.objects.filter(owner__uuid=uuid)
+        for group in groups:
+            transactions = Transaction.objects.filter(group=group.uuid)
+            if transactions.count() != 0:
+                
+                group.income = transactions.aggregate(value=Sum('amount',filter=Q(amount__gt=0))).get('value')
+                group.expenses = transactions.aggregate(value=Sum('amount',filter=Q(amount__lt=0))).get('value')
+                if group.income is None:
+                    group.income = 0
+                    group.balance = group.expenses
+                elif group.expenses is None:
+                    group.expenses = 0
+                    group.balance = group.income
+                else:
+                    group.balance = transactions.aggregate(value=Sum('amount')).get('value')
+                group.save()
         return groups
 
 class TransactionDetail(RetrieveUpdateDestroyAPIView):

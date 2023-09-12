@@ -4,7 +4,7 @@ from .models import TransactionGroup,Transaction
 class TransactionGroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = TransactionGroup
-        fields = ['uuid', 'name', 'owner','created']
+        fields = ['uuid', 'name', 'owner', 'balance','expenses','income','created']
 
 class TransactionSerializer(serializers.ModelSerializer):
     class Meta:

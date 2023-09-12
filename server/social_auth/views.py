@@ -38,7 +38,14 @@ class GetUserData(RetrieveAPIView):
         if transactions.count() != 0:
             user.income = transactions.aggregate(value=Sum('amount',filter=Q(amount__gt=0))).get('value')
             user.expenses = transactions.aggregate(value=Sum('amount',filter=Q(amount__lt=0))).get('value')
-            user.balance = transactions.aggregate(value=Sum('amount')).get('value')
+            if user.income is None:
+                user.income = 0
+                user.balance = user.expenses
+            elif user.expenses is None:
+                user.expenses = 0
+                user.balance = user.income
+            else:
+                user.balance = transactions.aggregate(value=Sum('amount')).get('value')
             user.save()
 
         serializer = GoogleUserSerializer(user)

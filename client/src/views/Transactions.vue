@@ -5,7 +5,7 @@
   >
     <h2 class="font-karla text-2xl md:text-4xl">Transactions</h2>
     <div class="flex flex-col items-center md:items-end">
-      <p class="font-montserrat text-2xl text-site-green">{{ mockData.user.data.balance }}</p>
+      <p class="font-montserrat text-2xl text-site-green">{{ selectedTransaction.balance }}</p>
       <p class="font-karla font-thin text-xs md:text-base">Balance</p>
     </div>
   </header>
@@ -94,10 +94,6 @@ const { isModalOpen, selectedModalType } = storeToRefs(modalStore);
 const transactions = ref([] as TItem[]);
 const groups = ref([] as TGroup[]);
 
-watch(selectedTransaction, (__new, __old) => {
-  console.log(__new.name);
-});
-
 const $cookies = inject<VueCookies>('$cookies');
 
 const config = {
@@ -106,7 +102,8 @@ const config = {
 
 const profileData = ref({} as TUser);
 
-const { setUser } = useUserStore();
+const userModal = useUserStore();
+const { user } = storeToRefs(userModal);
 
 await axios
   .get('/social_auth/user', config)
@@ -123,14 +120,14 @@ await axios
       income: dbUserInfo.income,
       created: dbUserInfo.created,
     };
-    setUser(profileData.value);
+    userModal.setUser(profileData.value);
   })
   .catch((error: AxiosError) => {
     console.log(error);
   });
 
 await axios
-  .get('/transaction/group')
+  .get(`/transaction/list/group/${user.value.uuid}`)
   .then((response: AxiosResponse) => {
     const dbInfo = response.data as TGroup[];
     transactionStore.setSelectedTransaction(dbInfo[defaultTransactionIndex]);
@@ -151,12 +148,29 @@ await axios
   });
 
 watch(isModalOpen, async (__new, __old) => {
-  if (selectedModalType.value === Types.TRANSACTION && !__new && __old) {
+  if (selectedModalType.value === Types.ITEM && !__new && __old) {
     await axios
-      .get('/transaction/group')
+      .get(`/transaction/list/${selectedTransaction.value.name}`)
+      .then((response: AxiosResponse) => {
+        const dbInfo = response.data as TItem[];
+        transactions.value = dbInfo;
+      })
+      .catch((error: AxiosError) => {
+        console.log(error);
+      });
+  }
+});
+
+watch(isModalOpen, async (__new, __old) => {
+  if (!__new && __old) {
+    await axios
+      .get(`/transaction/list/group/${user.value.uuid}`)
       .then((response: AxiosResponse) => {
         const dbInfo = response.data as TGroup[];
         groups.value = dbInfo;
+        selectedTransaction.value = groups.value.filter((group) => {
+          return group.uuid === selectedTransaction.value.uuid;
+        })[defaultTransactionIndex];
       })
       .catch((error: AxiosError) => {
         console.log(error);

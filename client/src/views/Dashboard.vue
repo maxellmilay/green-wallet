@@ -3,16 +3,16 @@
     <h2 class="font-karla text-white text-4xl text-center md:text-left">Dashboard</h2>
     <div class="flex flex-col md:flex-row grow gap-10 py-10">
       <section class="flex flex-col items-center md:h-full gap-y-12">
-        <SummaryItem :icon="SunIcon" :name="Summary.BALANCE" :value="profileData.balance" />
+        <SummaryItem :icon="SunIcon" :name="Summary.BALANCE" :value="selectedTransaction.balance" />
         <SummaryItem
           :icon="ShoppingCartIcon"
           :name="Summary.EXPENSES"
-          :value="profileData.expenses"
+          :value="selectedTransaction.expenses"
         />
         <SummaryItem
           :icon="CurrencyDollarIcon"
           :name="Summary.INCOME"
-          :value="profileData.income"
+          :value="selectedTransaction.income"
         />
       </section>
       <section class="flex flex-col md:h-full md:grow h-[30rem] px-[10%] md:px-0">
@@ -56,7 +56,7 @@ import Summary from '../enums/summary';
 import { defaultTransactionIndex } from '../constants/defaults';
 import useTransactionStore from '../stores/useTransactionStore';
 import { storeToRefs } from 'pinia';
-import { ref, Ref, inject } from 'vue';
+import { ref, inject, watch } from 'vue';
 import TransactionDropdown from '../components/TransactionDropdown.vue';
 import axios, { AxiosResponse, AxiosError } from 'axios';
 import { TUser } from '../types/TUser';
@@ -70,30 +70,41 @@ const { selectedTransaction } = storeToRefs(transactionStore);
 
 const transactions = ref([] as TItem[]);
 const groups = ref([] as TGroup[]);
+const profileData = ref({} as TUser);
 
-await axios
-  .get('/transaction/group')
-  .then((response: AxiosResponse) => {
-    const dbInfo = response.data as TGroup[];
-    transactionStore.setSelectedTransaction(dbInfo[defaultTransactionIndex]);
-    groups.value = dbInfo;
-  })
-  .catch((error: AxiosError) => {
-    console.log(error);
-  });
+const userModal = useUserStore();
+const { user } = storeToRefs(userModal);
 
-await axios
-  .get(`/transaction/list/${selectedTransaction.value.name}`)
-  .then((response: AxiosResponse) => {
-    const dbInfo = response.data as TItem[];
-    transactions.value = dbInfo;
-  })
-  .catch((error: AxiosError) => {
-    console.log(error);
-  });
+watch(user, async (__new, __old) => {
+  await axios
+    .get(`/transaction/list/group/${__new.uuid}`)
+    .then((response: AxiosResponse) => {
+      const dbInfo = response.data as TGroup[];
+      transactionStore.setSelectedTransaction(dbInfo[defaultTransactionIndex]);
+      groups.value = dbInfo;
+    })
+    .catch((error: AxiosError) => {
+      console.log(error);
+    });
+});
+
+watch(selectedTransaction, async (__new, __old) => {
+  await axios
+    .get(`/transaction/list/${__new.name}`)
+    .then((response: AxiosResponse) => {
+      const dbInfo = response.data as TItem[];
+      transactions.value = dbInfo;
+    })
+    .catch((error: AxiosError) => {
+      console.log(error);
+    });
+});
 
 const dropDownClick = () => {
+  console.log('CLICKED', isDropdownOpen.value);
+
   isDropdownOpen.value = !isDropdownOpen.value;
+  console.log('AFTER', isDropdownOpen.value);
   if (isDropdownOpen) {
     axios
       .get(`/transaction/list/${selectedTransaction.value.name}`)
@@ -113,10 +124,6 @@ const config = {
   headers: { Authorization: `Bearer ${$cookies?.get('Token')}` },
 };
 
-const profileData = ref({} as TUser);
-
-const { user, setUser } = useUserStore();
-
 await axios
   .get('/social_auth/user', config)
   .then((response: AxiosResponse) => {
@@ -132,7 +139,7 @@ await axios
       income: dbUserInfo.income,
       created: dbUserInfo.created,
     };
-    setUser(profileData.value);
+    userModal.setUser(profileData.value);
   })
   .catch((error: AxiosError) => {
     console.log(error);

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex flex-col absolute lg:right-0 lg:top-8 lg:bottom-auto bg-black text-xs w-44 rounded-lg"
+    class="flex flex-col absolute lg:right-0 z-20 lg:top-8 lg:bottom-auto bg-black text-xs w-44 rounded-lg"
     :class="dropdownClass"
   >
     <button
@@ -14,15 +14,19 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import useTransactionStore from '../stores/useTransactionStore';
 import { TGroup } from '../types/TTransaction';
 import axios, { AxiosError, AxiosResponse } from 'axios';
+import useUserStore from '../stores/useUserStore';
+import { storeToRefs } from 'pinia';
 
 const transactions = ref([] as any);
+const userModal = useUserStore();
+const { user } = storeToRefs(userModal);
 
 await axios
-  .get('/transaction/group')
+  .get(`/transaction/list/group/${user.value.uuid}`)
   .then((response: AxiosResponse) => {
     const dbInfo = response.data;
     transactions.value = dbInfo;
@@ -30,6 +34,18 @@ await axios
   .catch((error: AxiosError) => {
     console.log(error);
   });
+
+watch(user, async (__new, __old) => {
+  await axios
+    .get(`/transaction/list/group/${__new.uuid}`)
+    .then((response: AxiosResponse) => {
+      const dbInfo = response.data;
+      transactions.value = dbInfo;
+    })
+    .catch((error: AxiosError) => {
+      console.log(error);
+    });
+});
 
 const { setSelectedTransaction } = useTransactionStore();
 const emit = defineEmits(['close-dropdown']);
