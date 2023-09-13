@@ -13,6 +13,9 @@
         key="Name"
       />
     </div>
+    <div v-if="errors.length !== 0" class="flex flex-col items-center gap-1 mb-2 md:mb-5">
+      <p class="w-fit text-red-500" v-for="error in errors">{{ error }}</p>
+    </div>
     <div class="flex justify-end text-xs gap-3">
       <button
         class="text-site-red border border-site-red hover:bg-site-green/20 px-4 py-2 rounded"
@@ -49,6 +52,7 @@ import axios, { AxiosError, AxiosResponse } from 'axios';
 import useUserStore from '../../stores/useUserStore';
 import Types from '../../enums/types';
 import APIRoutes from '../../enums/apiRoutes';
+import Errors from '../../enums/errors';
 
 const transactionStore = useTransactionStore();
 const { selectedTransaction } = storeToRefs(transactionStore);
@@ -60,30 +64,59 @@ const defaultName =
   selectedModalFunction.value === Types.ADD ? defaultInputString : selectedTransaction.value.name;
 
 const name = ref(defaultName);
+const errors = ref([] as string[]);
 
 const handleAddGroupClick = async () => {
-  await axios
-    .post(APIRoutes.CREATE_GROUP, { name: name.value, owner: user.uuid })
-    .then(() => {
-      modalStore.closeModal(Types.ADD);
-    })
-    .catch((error: AxiosError) => {
-      console.log(error);
-    });
+  if (!errors.value.includes(Errors.EMPTY_NAME)) {
+    if (name.value === defaultInputString) {
+      errors.value.push(Errors.EMPTY_NAME);
+    }
+  } else {
+    if (name.value !== defaultInputString) {
+      errors.value = errors.value.filter((error) => {
+        return error !== Errors.EMPTY_NAME;
+      });
+    }
+  }
+
+  if (errors.value.length === 0) {
+    await axios
+      .post(APIRoutes.CREATE_GROUP, { name: name.value, owner: user.uuid })
+      .then(() => {
+        modalStore.closeModal(Types.ADD);
+      })
+      .catch((error: AxiosError) => {
+        console.log(error);
+      });
+  }
 };
 
 const handleUpdateGroupClick = async () => {
-  await axios
-    .put(`${APIRoutes.UPDATE_GROUP}${selectedTransaction.value.uuid}`, {
-      name: name.value,
-      owner: user.uuid,
-    })
-    .then(() => {
-      modalStore.closeModal(Types.UPDATE);
-    })
-    .catch((error: AxiosError) => {
-      console.log(error);
-    });
+  if (!errors.value.includes(Errors.EMPTY_NAME)) {
+    if (name.value === defaultInputString) {
+      errors.value.push(Errors.EMPTY_NAME);
+    }
+  } else {
+    if (name.value !== defaultInputString) {
+      errors.value = errors.value.filter((error) => {
+        return error !== Errors.EMPTY_NAME;
+      });
+    }
+  }
+
+  if (errors.value.length === 0) {
+    await axios
+      .put(`${APIRoutes.UPDATE_GROUP}${selectedTransaction.value.uuid}`, {
+        name: name.value,
+        owner: user.uuid,
+      })
+      .then(() => {
+        modalStore.closeModal(Types.UPDATE);
+      })
+      .catch((error: AxiosError) => {
+        console.log(error);
+      });
+  }
 };
 
 const handleDeleteGroupClick = async () => {

@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia';
 import { TItem, TGroup } from '../types/TTransaction';
 import Store from '../enums/store';
-import sortTransactions from '../helper/sortTransaction';
 
 const useTransactionStore = defineStore({
   id: Store.TRANSACTION,

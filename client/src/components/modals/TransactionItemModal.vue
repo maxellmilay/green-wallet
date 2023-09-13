@@ -58,7 +58,7 @@ import { storeToRefs } from 'pinia';
 import useModalStore from '../../stores/useModalStore';
 import Types from '../../enums/types';
 import { defaultInputString, defaultInputNumber } from '../../constants/defaults';
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
 import axios, { AxiosError } from 'axios';
 import APIRoutes from '../../enums/apiRoutes';
 import Errors from '../../enums/errors';
@@ -82,17 +82,29 @@ const errors = ref([] as string[]);
 
 const handleAddItemClick = async () => {
   if (!errors.value.includes(Errors.ZERO_AMOUNT)) {
-    if (item.value.amount === 0) {
+    if (item.value.amount === defaultInputNumber || !Number.isNaN(item.value.amount)) {
       errors.value.push(Errors.ZERO_AMOUNT);
-      return;
     }
   } else {
-    if (item.value.amount !== 0) {
+    if (item.value.amount !== defaultInputNumber && Number.isNaN(item.value.amount)) {
       errors.value = errors.value.filter((error) => {
         return error !== Errors.ZERO_AMOUNT;
       });
     }
   }
+
+  if (!errors.value.includes(Errors.EMPTY_NAME)) {
+    if (item.value.name === defaultInputString) {
+      errors.value.push(Errors.EMPTY_NAME);
+    }
+  } else {
+    if (item.value.name !== defaultInputString) {
+      errors.value = errors.value.filter((error) => {
+        return error !== Errors.EMPTY_NAME;
+      });
+    }
+  }
+
   if (errors.value.length === 0) {
     await axios
       .post(APIRoutes.CREATE_TRANSACTION, {
@@ -112,17 +124,31 @@ const handleAddItemClick = async () => {
 
 const handleUpdateItemClick = async () => {
   if (!errors.value.includes(Errors.ZERO_AMOUNT)) {
-    if (item.value.amount === 0) {
+    if (item.value.amount === defaultInputNumber || !Number.isNaN(item.value.amount)) {
       errors.value.push(Errors.ZERO_AMOUNT);
-      return;
     }
   } else {
-    if (item.value.amount !== 0) {
+    if (item.value.amount !== defaultInputNumber && Number.isNaN(item.value.amount)) {
       errors.value = errors.value.filter((error) => {
         return error !== Errors.ZERO_AMOUNT;
       });
     }
   }
+
+  if (!errors.value.includes(Errors.EMPTY_NAME)) {
+    if (item.value.name === defaultInputString) {
+      errors.value.push(Errors.EMPTY_NAME);
+    }
+  } else {
+    if (item.value.name !== defaultInputString) {
+      errors.value = errors.value.filter((error) => {
+        return error !== Errors.EMPTY_NAME;
+      });
+    }
+  }
+
+  console.log(errors);
+
   if (errors.value.length === 0) {
     await axios
       .put(`${APIRoutes.UPDATE_TRANSACTION}${selectedItem.value.uuid}`, {

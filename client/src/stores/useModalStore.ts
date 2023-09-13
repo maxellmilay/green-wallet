@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { defaultModalType, defaultModalFunction } from '../constants/defaults';
 import useTransactionStore from './useTransactionStore';
-import { TItem, TGroup } from '../types/TTransaction';
+import { TItem} from '../types/TTransaction';
 import Types from '../enums/types';
 import Store from '../enums/store';
 
