@@ -43,7 +43,7 @@ class ListGroups(ListAPIView):
                     group.balance = transactions.aggregate(value=Sum('amount')).get('value')
 
             group.save()
-        return groups
+        return sorted(groups,key=lambda x: x.created)
 
 class TransactionDetail(RetrieveUpdateDestroyAPIView):
     serializer_class = TransactionSerializer

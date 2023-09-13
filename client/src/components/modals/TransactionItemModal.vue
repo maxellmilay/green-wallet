@@ -81,12 +81,20 @@ const item = ref(defaultItem);
 const errors = ref([] as string[]);
 
 const handleAddItemClick = async () => {
+  console.log(typeof item.value.amount === typeof defaultInputNumber);
+
   if (!errors.value.includes(Errors.ZERO_AMOUNT)) {
-    if (item.value.amount === defaultInputNumber || !Number.isNaN(item.value.amount)) {
+    if (
+      item.value.amount === defaultInputNumber ||
+      typeof item.value.amount !== typeof defaultInputNumber
+    ) {
       errors.value.push(Errors.ZERO_AMOUNT);
     }
   } else {
-    if (item.value.amount !== defaultInputNumber && Number.isNaN(item.value.amount)) {
+    if (
+      item.value.amount !== defaultInputNumber &&
+      typeof item.value.amount === typeof defaultInputNumber
+    ) {
       errors.value = errors.value.filter((error) => {
         return error !== Errors.ZERO_AMOUNT;
       });
@@ -124,11 +132,17 @@ const handleAddItemClick = async () => {
 
 const handleUpdateItemClick = async () => {
   if (!errors.value.includes(Errors.ZERO_AMOUNT)) {
-    if (item.value.amount === defaultInputNumber || !Number.isNaN(item.value.amount)) {
+    if (
+      item.value.amount === defaultInputNumber ||
+      typeof item.value.amount !== typeof defaultInputNumber
+    ) {
       errors.value.push(Errors.ZERO_AMOUNT);
     }
   } else {
-    if (item.value.amount !== defaultInputNumber && Number.isNaN(item.value.amount)) {
+    if (
+      item.value.amount !== defaultInputNumber &&
+      typeof item.value.amount === typeof defaultInputNumber
+    ) {
       errors.value = errors.value.filter((error) => {
         return error !== Errors.ZERO_AMOUNT;
       });
