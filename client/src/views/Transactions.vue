@@ -147,7 +147,7 @@ await axios
 
 if (selectedTransaction.value) {
   await axios
-    .get(`/transaction/list/${selectedTransaction.value.name}`)
+    .get(`/transaction/list/${selectedTransaction.value.uuid}`)
     .then((response: AxiosResponse) => {
       const dbInfo = response.data as TItem[];
       transactions.value = dbInfo;
@@ -160,7 +160,7 @@ if (selectedTransaction.value) {
 watch(isModalOpen, async (__new, __old) => {
   if (selectedModalType.value === Types.ITEM && !__new && __old) {
     await axios
-      .get(`/transaction/list/${selectedTransaction.value.name}`)
+      .get(`/transaction/list/${selectedTransaction.value.uuid}`)
       .then((response: AxiosResponse) => {
         const dbInfo = response.data as TItem[];
         transactions.value = dbInfo;

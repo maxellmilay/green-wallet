@@ -140,9 +140,10 @@ await axios
 
 if (selectedTransaction.value) {
   await axios
-    .get(`/transaction/list/${selectedTransaction.value.name}`)
+    .get(`/transaction/list/${selectedTransaction.value.uuid}`)
     .then((response: AxiosResponse) => {
       const dbInfo = response.data as TItem[];
+      dbInfo.reverse();
       transactions.value = dbInfo;
     })
     .catch((error: AxiosError) => {
@@ -168,6 +169,7 @@ watch(selectedTransaction, async (__new, __old) => {
     .get(`/transaction/list/${__new.name}`)
     .then((response: AxiosResponse) => {
       const dbInfo = response.data as TItem[];
+      dbInfo.reverse();
       transactions.value = dbInfo;
     })
     .catch((error: AxiosError) => {
@@ -193,9 +195,10 @@ watch(isModalOpen, async (__new, __old) => {
 watch(isModalOpen, async (__new, __old) => {
   if (!__new && __old) {
     await axios
-      .get(`/transaction/list/${selectedTransaction.value.name}`)
+      .get(`/transaction/list/${selectedTransaction.value.uuid}`)
       .then((response: AxiosResponse) => {
         const dbInfo = response.data as TItem[];
+        dbInfo.reverse();
         transactions.value = dbInfo;
       })
       .catch((error: AxiosError) => {
@@ -208,9 +211,10 @@ const dropDownClick = async () => {
   isDropdownOpen.value = !isDropdownOpen.value;
   if (isDropdownOpen && selectedTransaction.value !== ({} as TGroup)) {
     await axios
-      .get(`/transaction/list/${selectedTransaction.value.name}`)
+      .get(`/transaction/list/${selectedTransaction.value.uuid}`)
       .then((response: AxiosResponse) => {
         const dbInfo = response.data as TItem[];
+        dbInfo.reverse();
         transactions.value = dbInfo;
       })
       .catch((error: AxiosError) => {

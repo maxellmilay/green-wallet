@@ -10,10 +10,10 @@ class ListTransactions(ListAPIView):
     serializer_class = TransactionSerializer
 
     def get_queryset(self):
-        group = self.kwargs['group']
+        uuid = self.kwargs['uuid']
         #pylint: disable=E1101
-        transactions = Transaction.objects.filter(group__name=group)
-        return transactions
+        transactions = Transaction.objects.filter(group__uuid=uuid)
+        return sorted(transactions,key=lambda x: x.created)
     
 class ListGroups(ListAPIView):
     serializer_class = TransactionGroupSerializer
