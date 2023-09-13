@@ -33,8 +33,11 @@ const useModalStore = defineStore({
       this.selectedModalType = Types.TRANSACTION;
       this.isModalOpen = true;
     },
-    closeModal() {
+    closeModal(modalFunction?: string) {
       this.isModalOpen = false;
+      if (modalFunction) {
+        this.selectedModalFunction = modalFunction;
+      }
       //possible data leak
     },
     setSelectedModalType(type: string) {

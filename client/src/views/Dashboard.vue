@@ -72,6 +72,7 @@ import TransactionPreviewItem from '../components/TransactionPreviewItem.vue';
 import SummaryItem from '../components/SummaryItem.vue';
 import Summary from '../enums/summary';
 import {
+  defaultTransaction,
   defaultTransactionIndex,
   defaultTransactionItem,
   defaultUser,
@@ -103,6 +104,8 @@ const profileData = ref(defaultUser);
 const { selectedTransaction } = storeToRefs(transactionStore);
 const { user } = storeToRefs(userStore);
 const { isModalOpen, selectedModalType } = storeToRefs(modalStore);
+
+transactionStore.setSelectedTransaction(defaultTransaction);
 
 const $cookies = inject<VueCookies>('$cookies');
 
@@ -140,8 +143,20 @@ const fetchTransactionGroups = async (currentUser: TUser) => {
     .get(`${APIRoutes.FETCH_TRANSACTION_GROUPS}${currentUser.uuid}`)
     .then((response: AxiosResponse) => {
       const dbInfo = response.data as TGroup[];
-      transactionStore.setSelectedTransaction(dbInfo[defaultTransactionIndex]);
       groups.value = dbInfo;
+      if (selectedTransaction.value && Object.keys(selectedTransaction.value).length !== 0) {
+        if (groups.value.length === 1) {
+          transactionStore.setSelectedTransaction(groups.value[defaultTransactionIndex]);
+        } else {
+          transactionStore.setSelectedTransaction(
+            groups.value.filter((group) => {
+              return group.uuid === selectedTransaction.value.uuid;
+            })[defaultTransactionIndex]
+          );
+        }
+      } else {
+        transactionStore.setSelectedTransaction(dbInfo[defaultTransactionIndex]);
+      }
     })
     .catch((error: AxiosError) => {
       console.log(error);
@@ -177,8 +192,8 @@ watch(selectedTransaction, async (__new, __old) => {
 
 watch(isModalOpen, async (__new, __old) => {
   if (!__new && __old) {
-    await fetchTransactionsFromGroup(selectedTransaction.value);
     await fetchTransactionGroups(user.value);
+    await fetchTransactionsFromGroup(selectedTransaction.value);
   }
 });
 

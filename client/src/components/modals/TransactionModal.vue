@@ -65,7 +65,7 @@ const handleAddGroupClick = async () => {
   await axios
     .post(APIRoutes.CREATE_GROUP, { name: name.value, owner: user.uuid })
     .then(() => {
-      modalStore.closeModal();
+      modalStore.closeModal(Types.ADD);
     })
     .catch((error: AxiosError) => {
       console.log(error);
@@ -79,7 +79,7 @@ const handleUpdateGroupClick = async () => {
       owner: user.uuid,
     })
     .then(() => {
-      modalStore.closeModal();
+      modalStore.closeModal(Types.UPDATE);
     })
     .catch((error: AxiosError) => {
       console.log(error);
@@ -90,7 +90,7 @@ const handleDeleteGroupClick = async () => {
   await axios
     .delete(`${APIRoutes.DELETE_GROUP}${selectedTransaction.value.uuid}`)
     .then(() => {
-      modalStore.closeModal();
+      modalStore.closeModal(Types.DELETE);
     })
     .catch((error: AxiosError) => {
       console.log(error);

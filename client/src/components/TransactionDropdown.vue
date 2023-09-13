@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex flex-col absolute lg:right-0 z-20 lg:top-8 lg:bottom-auto bg-black text-xs w-44 rounded-lg"
+    class="flex flex-col absolute lg:right-0 lg:top-8 lg:bottom-auto bg-black text-xs w-44 rounded-lg"
     :class="dropdownClass"
   >
     <button

@@ -82,7 +82,7 @@ const handleAddItemClick = async () => {
       group: selectedTransaction.value.uuid,
     })
     .then(() => {
-      modalStore.closeModal();
+      modalStore.closeModal(Types.ADD);
     })
     .catch((error: AxiosError) => {
       console.log(error);
@@ -97,7 +97,7 @@ const handleUpdateItemClick = async () => {
       group: selectedTransaction.value.uuid,
     })
     .then(() => {
-      modalStore.closeModal();
+      modalStore.closeModal(Types.UPDATE);
     })
     .catch((error: AxiosError) => {
       console.log(error);
@@ -108,7 +108,7 @@ const handleDeleteItemClick = async () => {
   await axios
     .delete(`${APIRoutes.DELETE_TRANSACTION}${selectedItem.value.uuid}`)
     .then(() => {
-      modalStore.closeModal();
+      modalStore.closeModal(Types.DELETE);
     })
     .catch((error: AxiosError) => {
       console.log(error);

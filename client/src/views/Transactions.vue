@@ -82,7 +82,7 @@ import TransactionItemModal from '../components/modals/TransactionItemModal.vue'
 import TransactionModal from '../components/modals/TransactionModal.vue';
 import { TGroup, TItem } from '../types/TTransaction';
 import { TUser } from '../types/TUser';
-import { defaultTransactionIndex } from '../constants/defaults';
+import { defaultTransactionIndex, defaultTransaction } from '../constants/defaults';
 import Types from '../enums/types';
 import useTransactionStore from '../stores/useTransactionStore';
 import useModalStore from '../stores/useModalStore';
@@ -106,6 +106,8 @@ const profileData = ref({} as TUser);
 const { user } = storeToRefs(userModal);
 const { selectedTransaction } = storeToRefs(transactionStore);
 const { isModalOpen, selectedModalType, selectedModalFunction } = storeToRefs(modalStore);
+
+transactionStore.setSelectedTransaction(defaultTransaction);
 
 const $cookies = inject<VueCookies>('$cookies');
 
@@ -144,16 +146,19 @@ const fetchTransactionGroups = async (currentUser: TUser) => {
     .then((response: AxiosResponse) => {
       const dbInfo = response.data as TGroup[];
       groups.value = dbInfo;
-
-      if (selectedTransaction) {
+      if (selectedTransaction.value && Object.keys(selectedTransaction.value).length !== 0) {
         if (groups.value.length === 1) {
           transactionStore.setSelectedTransaction(groups.value[defaultTransactionIndex]);
         } else {
-          transactionStore.setSelectedTransaction(
-            groups.value.filter((group) => {
-              return group.uuid === selectedTransaction.value.uuid;
-            })[defaultTransactionIndex]
-          );
+          if (selectedModalFunction.value !== Types.DELETE) {
+            transactionStore.setSelectedTransaction(
+              groups.value.filter((group) => {
+                return group.uuid === selectedTransaction.value.uuid;
+              })[defaultTransactionIndex]
+            );
+          } else {
+            transactionStore.setSelectedTransaction(groups.value[defaultTransactionIndex]);
+          }
         }
       } else {
         transactionStore.setSelectedTransaction(dbInfo[defaultTransactionIndex]);
