@@ -13,7 +13,7 @@
         key="Name"
       />
     </div>
-    <div class="flex gap-5 items-center mb-5 md:mb-10 text-[0.5rem] md:text-xs lg-text-base">
+    <div class="flex gap-5 items-center mb-2 md:mb-5 text-[0.5rem] md:text-xs lg-text-base">
       <label for="transaction-amount" class="grow font-montserrat text-right">Amount</label>
       <input
         id="transaction-amount"
@@ -22,6 +22,9 @@
         v-model="item.amount"
         key="Amount"
       />
+    </div>
+    <div v-if="errors.length !== 0" class="flex flex-col items-center gap-1 mb-2 md:mb-5">
+      <p class="w-fit text-red-500" v-for="error in errors">{{ error }}</p>
     </div>
     <div class="flex justify-end text-xs gap-3">
       <button
@@ -58,9 +61,11 @@ import { defaultInputString, defaultInputNumber } from '../../constants/defaults
 import { ref, watch } from 'vue';
 import axios, { AxiosError } from 'axios';
 import APIRoutes from '../../enums/apiRoutes';
+import Errors from '../../enums/errors';
 
 const transactionStore = useTransactionStore();
 const modalStore = useModalStore();
+
 const { selectedItem, selectedTransaction } = storeToRefs(transactionStore);
 const { selectedModalFunction } = storeToRefs(modalStore);
 
@@ -73,35 +78,66 @@ const defaultItem =
       };
 
 const item = ref(defaultItem);
+const errors = ref([] as string[]);
 
 const handleAddItemClick = async () => {
-  await axios
-    .post(APIRoutes.CREATE_TRANSACTION, {
-      name: item.value.name,
-      amount: item.value.amount,
-      group: selectedTransaction.value.uuid,
-    })
-    .then(() => {
-      modalStore.closeModal(Types.ADD);
-    })
-    .catch((error: AxiosError) => {
-      console.log(error);
-    });
+  if (!errors.value.includes(Errors.ZERO_AMOUNT)) {
+    if (item.value.amount === 0) {
+      errors.value.push(Errors.ZERO_AMOUNT);
+      return;
+    }
+  } else {
+    if (item.value.amount !== 0) {
+      errors.value = errors.value.filter((error) => {
+        return error !== Errors.ZERO_AMOUNT;
+      });
+    }
+  }
+  if (errors.value.length === 0) {
+    await axios
+      .post(APIRoutes.CREATE_TRANSACTION, {
+        name: item.value.name,
+        amount: item.value.amount,
+        group: selectedTransaction.value.uuid,
+      })
+      .then(() => {
+        modalStore.closeModal(Types.ADD);
+        errors.value = [] as string[];
+      })
+      .catch((error: AxiosError) => {
+        console.log(error);
+      });
+  }
 };
 
 const handleUpdateItemClick = async () => {
-  await axios
-    .put(`${APIRoutes.UPDATE_TRANSACTION}${selectedItem.value.uuid}`, {
-      name: item.value.name,
-      amount: item.value.amount,
-      group: selectedTransaction.value.uuid,
-    })
-    .then(() => {
-      modalStore.closeModal(Types.UPDATE);
-    })
-    .catch((error: AxiosError) => {
-      console.log(error);
-    });
+  if (!errors.value.includes(Errors.ZERO_AMOUNT)) {
+    if (item.value.amount === 0) {
+      errors.value.push(Errors.ZERO_AMOUNT);
+      return;
+    }
+  } else {
+    if (item.value.amount !== 0) {
+      errors.value = errors.value.filter((error) => {
+        return error !== Errors.ZERO_AMOUNT;
+      });
+    }
+  }
+  if (errors.value.length === 0) {
+    await axios
+      .put(`${APIRoutes.UPDATE_TRANSACTION}${selectedItem.value.uuid}`, {
+        name: item.value.name,
+        amount: item.value.amount,
+        group: selectedTransaction.value.uuid,
+      })
+      .then(() => {
+        modalStore.closeModal(Types.UPDATE);
+        errors.value = [] as string[];
+      })
+      .catch((error: AxiosError) => {
+        console.log(error);
+      });
+  }
 };
 
 const handleDeleteItemClick = async () => {
