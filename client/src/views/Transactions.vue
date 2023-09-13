@@ -150,14 +150,17 @@ const fetchTransactionGroups = async (currentUser: TUser) => {
         if (groups.value.length === 1) {
           transactionStore.setSelectedTransaction(groups.value[defaultTransactionIndex]);
         } else {
-          if (selectedModalFunction.value !== Types.DELETE) {
+          if (
+            selectedModalFunction.value === Types.DELETE &&
+            selectedModalType.value === Types.TRANSACTION
+          ) {
+            transactionStore.setSelectedTransaction(groups.value[defaultTransactionIndex]);
+          } else {
             transactionStore.setSelectedTransaction(
               groups.value.filter((group) => {
                 return group.uuid === selectedTransaction.value.uuid;
               })[defaultTransactionIndex]
             );
-          } else {
-            transactionStore.setSelectedTransaction(groups.value[defaultTransactionIndex]);
           }
         }
       } else {
