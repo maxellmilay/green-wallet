@@ -71,7 +71,11 @@ import {
 import TransactionPreviewItem from '../components/TransactionPreviewItem.vue';
 import SummaryItem from '../components/SummaryItem.vue';
 import Summary from '../enums/summary';
-import { defaultTransactionIndex, defaultTransactionItem } from '../constants/defaults';
+import {
+  defaultTransactionIndex,
+  defaultTransactionItem,
+  defaultUser,
+} from '../constants/defaults';
 import useTransactionStore from '../stores/useTransactionStore';
 import { storeToRefs } from 'pinia';
 import { ref, inject, watch } from 'vue';
@@ -85,19 +89,19 @@ import TransactionModal from '../components/modals/TransactionModal.vue';
 import TransactionItemModal from '../components/modals/TransactionItemModal.vue';
 import useModalStore from '../stores/useModalStore';
 import Types from '../enums/types';
+import APIRoutes from '../enums/apiRoutes';
+
+const transactionStore = useTransactionStore();
+const userStore = useUserStore();
+const modalStore = useModalStore();
 
 const isDropdownOpen = ref(false);
-const transactionStore = useTransactionStore();
-const { selectedTransaction } = storeToRefs(transactionStore);
-
 const transactions = ref([] as TItem[]);
 const groups = ref([] as TGroup[]);
-const profileData = ref({} as TUser);
+const profileData = ref(defaultUser);
 
-const userStore = useUserStore();
+const { selectedTransaction } = storeToRefs(transactionStore);
 const { user } = storeToRefs(userStore);
-
-const modalStore = useModalStore();
 const { isModalOpen, selectedModalType } = storeToRefs(modalStore);
 
 const $cookies = inject<VueCookies>('$cookies');
@@ -106,54 +110,34 @@ const config = {
   headers: { Authorization: `Bearer ${$cookies?.get('Token')}` },
 };
 
-await axios
-  .get('/social_auth/user', config)
-  .then((response: AxiosResponse) => {
-    const dbUserInfo = response.data;
-    profileData.value = {
-      uuid: dbUserInfo.uuid,
-      firstName: dbUserInfo.first_name,
-      lastName: dbUserInfo.last_name,
-      email: dbUserInfo.email,
-      picture: dbUserInfo.picture,
-      balance: dbUserInfo.balance,
-      expenses: dbUserInfo.expenses,
-      income: dbUserInfo.income,
-      created: dbUserInfo.created,
-    };
-    userStore.setUser(profileData.value);
-  })
-  .catch((error: AxiosError) => {
-    console.log(error);
-  });
-
-await axios
-  .get(`/transaction/list/group/${user.value.uuid}`)
-  .then((response: AxiosResponse) => {
-    const dbInfo = response.data as TGroup[];
-    transactionStore.setSelectedTransaction(dbInfo[defaultTransactionIndex]);
-    groups.value = dbInfo;
-  })
-  .catch((error: AxiosError) => {
-    console.log(error);
-  });
-
-if (selectedTransaction.value) {
+const fetchUserData = async () => {
   await axios
-    .get(`/transaction/list/${selectedTransaction.value.uuid}`)
+    .get(APIRoutes.FETCH_USER_DATA, config)
     .then((response: AxiosResponse) => {
-      const dbInfo = response.data as TItem[];
-      dbInfo.reverse();
-      transactions.value = dbInfo;
+      const dbUserInfo = response.data;
+      profileData.value = {
+        uuid: dbUserInfo.uuid,
+        firstName: dbUserInfo.first_name,
+        lastName: dbUserInfo.last_name,
+        email: dbUserInfo.email,
+        picture: dbUserInfo.picture,
+        balance: dbUserInfo.balance,
+        expenses: dbUserInfo.expenses,
+        income: dbUserInfo.income,
+        created: dbUserInfo.created,
+      };
+      userStore.setUser(profileData.value);
     })
     .catch((error: AxiosError) => {
       console.log(error);
     });
-}
+};
 
-watch(user, async (__new, __old) => {
+await fetchUserData();
+
+const fetchTransactionGroups = async (currentUser: TUser) => {
   await axios
-    .get(`/transaction/list/group/${__new.uuid}`)
+    .get(`${APIRoutes.FETCH_TRANSACTION_GROUPS}${currentUser.uuid}`)
     .then((response: AxiosResponse) => {
       const dbInfo = response.data as TGroup[];
       transactionStore.setSelectedTransaction(dbInfo[defaultTransactionIndex]);
@@ -162,11 +146,13 @@ watch(user, async (__new, __old) => {
     .catch((error: AxiosError) => {
       console.log(error);
     });
-});
+};
 
-watch(selectedTransaction, async (__new, __old) => {
+await fetchTransactionGroups(user.value);
+
+const fetchTransactionsFromGroup = async (currentGroup: TGroup) => {
   await axios
-    .get(`/transaction/list/${__new.name}`)
+    .get(`${APIRoutes.FETCH_TRANSACTIONS_FROM_GROUP}${currentGroup.uuid}`)
     .then((response: AxiosResponse) => {
       const dbInfo = response.data as TItem[];
       dbInfo.reverse();
@@ -175,51 +161,31 @@ watch(selectedTransaction, async (__new, __old) => {
     .catch((error: AxiosError) => {
       console.log(error);
     });
+};
+
+if (selectedTransaction.value) {
+  await fetchTransactionsFromGroup(selectedTransaction.value);
+}
+
+watch(user, async (__new, __old) => {
+  await fetchTransactionGroups(__new);
+});
+
+watch(selectedTransaction, async (__new, __old) => {
+  await fetchTransactionsFromGroup(__new);
 });
 
 watch(isModalOpen, async (__new, __old) => {
   if (!__new && __old) {
-    await axios
-      .get(`/transaction/list/group/${user.value.uuid}`)
-      .then((response: AxiosResponse) => {
-        const dbInfo = response.data;
-        transactionStore.setSelectedTransaction(dbInfo[defaultTransactionIndex]);
-        groups.value = dbInfo;
-      })
-      .catch((error: AxiosError) => {
-        console.log(error);
-      });
-  }
-});
-
-watch(isModalOpen, async (__new, __old) => {
-  if (!__new && __old) {
-    await axios
-      .get(`/transaction/list/${selectedTransaction.value.uuid}`)
-      .then((response: AxiosResponse) => {
-        const dbInfo = response.data as TItem[];
-        dbInfo.reverse();
-        transactions.value = dbInfo;
-      })
-      .catch((error: AxiosError) => {
-        console.log(error);
-      });
+    await fetchTransactionsFromGroup(selectedTransaction.value);
+    await fetchTransactionGroups(user.value);
   }
 });
 
 const dropDownClick = async () => {
   isDropdownOpen.value = !isDropdownOpen.value;
-  if (isDropdownOpen && selectedTransaction.value !== ({} as TGroup)) {
-    await axios
-      .get(`/transaction/list/${selectedTransaction.value.uuid}`)
-      .then((response: AxiosResponse) => {
-        const dbInfo = response.data as TItem[];
-        dbInfo.reverse();
-        transactions.value = dbInfo;
-      })
-      .catch((error: AxiosError) => {
-        console.log(error);
-      });
+  if (isDropdownOpen && selectedTransaction.value) {
+    await fetchTransactionsFromGroup(selectedTransaction.value);
   }
 };
 

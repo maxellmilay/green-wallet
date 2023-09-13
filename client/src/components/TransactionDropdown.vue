@@ -20,24 +20,16 @@ import { TGroup } from '../types/TTransaction';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import useUserStore from '../stores/useUserStore';
 import { storeToRefs } from 'pinia';
+import { TUser } from '../types/TUser';
+import APIRoutes from '../enums/apiRoutes';
 
 const transactions = ref([] as any);
 const userModal = useUserStore();
 const { user } = storeToRefs(userModal);
 
-await axios
-  .get(`/transaction/list/group/${user.value.uuid}`)
-  .then((response: AxiosResponse) => {
-    const dbInfo = response.data;
-    transactions.value = dbInfo;
-  })
-  .catch((error: AxiosError) => {
-    console.log(error);
-  });
-
-watch(user, async (__new, __old) => {
+const fetchTransactionGroups = async (currentUser: TUser) => {
   await axios
-    .get(`/transaction/list/group/${__new.uuid}`)
+    .get(`${APIRoutes.FETCH_TRANSACTION_GROUPS}${currentUser.uuid}`)
     .then((response: AxiosResponse) => {
       const dbInfo = response.data;
       transactions.value = dbInfo;
@@ -45,6 +37,12 @@ watch(user, async (__new, __old) => {
     .catch((error: AxiosError) => {
       console.log(error);
     });
+};
+
+await fetchTransactionGroups(user.value);
+
+watch(user, async (__new, __old) => {
+  await fetchTransactionGroups(__new);
 });
 
 const { setSelectedTransaction } = useTransactionStore();

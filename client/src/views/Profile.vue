@@ -20,13 +20,12 @@
 <script setup lang="ts">
 import ProfileSummaryItem from '../components/ProfileSummaryItem.vue';
 import Summary from '../enums/summary';
-import mockData from '../mockData';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import { TUser } from '../types/TUser';
 import { ref, Ref, inject } from 'vue';
 import { VueCookies } from 'vue-cookies';
+import APIRoutes from '../enums/apiRoutes';
 
-const { balance, expenses, income } = mockData.user.data;
 const profileData: Ref<TUser> = ref({} as TUser);
 
 const $cookies = inject<VueCookies>('$cookies');
@@ -35,21 +34,27 @@ const config = {
   headers: { Authorization: `Bearer ${$cookies?.get('Token')}` },
 };
 
-await axios
-  .get('/social_auth/user', config)
-  .then((response: AxiosResponse) => {
-    const dbUserInfo = response.data;
-    profileData.value = {
-      firstName: dbUserInfo.first_name,
-      lastName: dbUserInfo.last_name,
-      email: dbUserInfo.email,
-      picture: dbUserInfo.picture,
-      balance: dbUserInfo.balance,
-      expenses: dbUserInfo.expenses,
-      income: dbUserInfo.income,
-    };
-  })
-  .catch((error: AxiosError) => {
-    console.log(error);
-  });
+const fetchUserData = async () => {
+  await axios
+    .get(APIRoutes.FETCH_USER_DATA, config)
+    .then((response: AxiosResponse) => {
+      const dbUserInfo = response.data;
+      profileData.value = {
+        uuid: dbUserInfo.uuid,
+        firstName: dbUserInfo.first_name,
+        lastName: dbUserInfo.last_name,
+        email: dbUserInfo.email,
+        picture: dbUserInfo.picture,
+        balance: dbUserInfo.balance,
+        expenses: dbUserInfo.expenses,
+        income: dbUserInfo.income,
+        created: dbUserInfo.created,
+      };
+    })
+    .catch((error: AxiosError) => {
+      console.log(error);
+    });
+};
+
+await fetchUserData();
 </script>

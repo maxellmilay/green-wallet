@@ -57,6 +57,7 @@ import Types from '../../enums/types';
 import { defaultInputString, defaultInputNumber } from '../../constants/defaults';
 import { ref, watch } from 'vue';
 import axios, { AxiosError } from 'axios';
+import APIRoutes from '../../enums/apiRoutes';
 
 const transactionStore = useTransactionStore();
 const modalStore = useModalStore();
@@ -75,7 +76,7 @@ const item = ref(defaultItem);
 
 const handleAddItemClick = async () => {
   await axios
-    .post('/transaction/create-transaction', {
+    .post(APIRoutes.CREATE_TRANSACTION, {
       name: item.value.name,
       amount: item.value.amount,
       group: selectedTransaction.value.uuid,
@@ -90,7 +91,7 @@ const handleAddItemClick = async () => {
 
 const handleUpdateItemClick = async () => {
   await axios
-    .put(`/transaction/${selectedItem.value.uuid}`, {
+    .put(`${APIRoutes.UPDATE_TRANSACTION}${selectedItem.value.uuid}`, {
       name: item.value.name,
       amount: item.value.amount,
       group: selectedTransaction.value.uuid,
@@ -105,7 +106,7 @@ const handleUpdateItemClick = async () => {
 
 const handleDeleteItemClick = async () => {
   await axios
-    .delete(`/transaction/${selectedItem.value.uuid}`)
+    .delete(`${APIRoutes.DELETE_TRANSACTION}${selectedItem.value.uuid}`)
     .then(() => {
       modalStore.closeModal();
     })

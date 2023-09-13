@@ -18,9 +18,10 @@ import Types from '../enums/types';
 import useTransactionStore from '../stores/useTransactionStore';
 import { storeToRefs } from 'pinia';
 import useModalStore from '../stores/useModalStore';
-import { TGroup, TItem } from '../types/TTransaction';
+import { TItem } from '../types/TTransaction';
 import { ref, watch } from 'vue';
 import axios, { AxiosResponse, AxiosError } from 'axios';
+import APIRoutes from '../enums/apiRoutes';
 
 const transactionStore = useTransactionStore();
 const { selectedTransaction } = storeToRefs(transactionStore);
@@ -29,38 +30,10 @@ const { isModalOpen, selectedModalType } = storeToRefs(modalStore);
 
 const transactions = ref([] as TItem[]);
 
-if (selectedTransaction.value) {
-  await axios
-    .get(`/transaction/list/${selectedTransaction.value.uuid}`)
-    .then((response: AxiosResponse) => {
-      const dbInfo = response.data as TItem[];
-      transactions.value = dbInfo.filter((info) => {
-        return info.amount > 0;
-      });
-    })
-    .catch((error: AxiosError) => {
-      console.log(error);
-    });
-}
-
-watch(selectedTransaction, async () => {
-  await axios
-    .get(`/transaction/list/${selectedTransaction.value.uuid}`)
-    .then((response: AxiosResponse) => {
-      const dbInfo = response.data as TItem[];
-      transactions.value = dbInfo.filter((info) => {
-        return info.amount > 0;
-      });
-    })
-    .catch((error: AxiosError) => {
-      console.log(error);
-    });
-});
-
-watch(isModalOpen, async (__new, __old) => {
-  if (selectedModalType.value === Types.ITEM && !__new && __old) {
+const fetchPositiveTransactionsFromGroup = async () => {
+  if (selectedTransaction.value) {
     await axios
-      .get(`/transaction/list/${selectedTransaction.value.uuid}`)
+      .get(`${APIRoutes.FETCH_TRANSACTIONS_FROM_GROUP}${selectedTransaction.value.uuid}`)
       .then((response: AxiosResponse) => {
         const dbInfo = response.data as TItem[];
         transactions.value = dbInfo.filter((info) => {
@@ -70,6 +43,22 @@ watch(isModalOpen, async (__new, __old) => {
       .catch((error: AxiosError) => {
         console.log(error);
       });
+  } else {
+    transactions.value = [] as TItem[];
+  }
+};
+
+if (selectedTransaction.value) {
+  await fetchPositiveTransactionsFromGroup();
+}
+
+watch(selectedTransaction, async () => {
+  await fetchPositiveTransactionsFromGroup();
+});
+
+watch(isModalOpen, async (__new, __old) => {
+  if (selectedModalType.value === Types.ITEM && !__new && __old) {
+    await fetchPositiveTransactionsFromGroup();
   }
 });
 </script>

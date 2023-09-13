@@ -82,7 +82,7 @@ import TransactionItemModal from '../components/modals/TransactionItemModal.vue'
 import TransactionModal from '../components/modals/TransactionModal.vue';
 import { TGroup, TItem } from '../types/TTransaction';
 import { TUser } from '../types/TUser';
-import { defaultTransaction, defaultTransactionIndex } from '../constants/defaults';
+import { defaultTransactionIndex } from '../constants/defaults';
 import Types from '../enums/types';
 import useTransactionStore from '../stores/useTransactionStore';
 import useModalStore from '../stores/useModalStore';
@@ -93,14 +93,19 @@ import axios, { AxiosResponse, AxiosError } from 'axios';
 import { VueCookies } from 'vue-cookies';
 import useUserStore from '../stores/useUserStore';
 import FluxFallback from '../components/fallback/FluxFallback.vue';
+import APIRoutes from '../enums/apiRoutes';
 
 const transactionStore = useTransactionStore();
-const { selectedTransaction } = storeToRefs(transactionStore);
+const userModal = useUserStore();
 const modalStore = useModalStore();
-const { isModalOpen, selectedModalType, selectedModalFunction } = storeToRefs(modalStore);
 
 const transactions = ref([] as TItem[]);
 const groups = ref([] as TGroup[]);
+const profileData = ref({} as TUser);
+
+const { user } = storeToRefs(userModal);
+const { selectedTransaction } = storeToRefs(transactionStore);
+const { isModalOpen, selectedModalType, selectedModalFunction } = storeToRefs(modalStore);
 
 const $cookies = inject<VueCookies>('$cookies');
 
@@ -108,46 +113,62 @@ const config = {
   headers: { Authorization: `Bearer ${$cookies?.get('Token')}` },
 };
 
-const profileData = ref({} as TUser);
-
-const userModal = useUserStore();
-const { user } = storeToRefs(userModal);
-
-await axios
-  .get('/social_auth/user', config)
-  .then((response: AxiosResponse) => {
-    const dbUserInfo = response.data;
-    profileData.value = {
-      uuid: dbUserInfo.uuid,
-      firstName: dbUserInfo.first_name,
-      lastName: dbUserInfo.last_name,
-      email: dbUserInfo.email,
-      picture: dbUserInfo.picture,
-      balance: dbUserInfo.balance,
-      expenses: dbUserInfo.expenses,
-      income: dbUserInfo.income,
-      created: dbUserInfo.created,
-    };
-    userModal.setUser(profileData.value);
-  })
-  .catch((error: AxiosError) => {
-    console.log(error);
-  });
-
-await axios
-  .get(`/transaction/list/group/${user.value.uuid}`)
-  .then((response: AxiosResponse) => {
-    const dbInfo = response.data as TGroup[];
-    transactionStore.setSelectedTransaction(dbInfo[defaultTransactionIndex]);
-    groups.value = dbInfo;
-  })
-  .catch((error: AxiosError) => {
-    console.log(error);
-  });
-
-if (selectedTransaction.value) {
+const fetchUserData = async () => {
   await axios
-    .get(`/transaction/list/${selectedTransaction.value.uuid}`)
+    .get(APIRoutes.FETCH_USER_DATA, config)
+    .then((response: AxiosResponse) => {
+      const dbUserInfo = response.data;
+      profileData.value = {
+        uuid: dbUserInfo.uuid,
+        firstName: dbUserInfo.first_name,
+        lastName: dbUserInfo.last_name,
+        email: dbUserInfo.email,
+        picture: dbUserInfo.picture,
+        balance: dbUserInfo.balance,
+        expenses: dbUserInfo.expenses,
+        income: dbUserInfo.income,
+        created: dbUserInfo.created,
+      };
+      userModal.setUser(profileData.value);
+    })
+    .catch((error: AxiosError) => {
+      console.log(error);
+    });
+};
+
+await fetchUserData();
+
+const fetchTransactionGroups = async (currentUser: TUser) => {
+  await axios
+    .get(`${APIRoutes.FETCH_TRANSACTION_GROUPS}${currentUser.uuid}`)
+    .then((response: AxiosResponse) => {
+      const dbInfo = response.data as TGroup[];
+      groups.value = dbInfo;
+
+      if (selectedTransaction) {
+        if (groups.value.length === 1) {
+          transactionStore.setSelectedTransaction(groups.value[defaultTransactionIndex]);
+        } else {
+          transactionStore.setSelectedTransaction(
+            groups.value.filter((group) => {
+              return group.uuid === selectedTransaction.value.uuid;
+            })[defaultTransactionIndex]
+          );
+        }
+      } else {
+        transactionStore.setSelectedTransaction(dbInfo[defaultTransactionIndex]);
+      }
+    })
+    .catch((error: AxiosError) => {
+      console.log(error);
+    });
+};
+
+await fetchTransactionGroups(user.value);
+
+const fetchTransactionsFromGroup = async (currentGroup: TGroup) => {
+  await axios
+    .get(`${APIRoutes.FETCH_TRANSACTIONS_FROM_GROUP}${currentGroup.uuid}`)
     .then((response: AxiosResponse) => {
       const dbInfo = response.data as TItem[];
       transactions.value = dbInfo;
@@ -155,40 +176,21 @@ if (selectedTransaction.value) {
     .catch((error: AxiosError) => {
       console.log(error);
     });
+};
+
+if (selectedTransaction.value) {
+  await fetchTransactionsFromGroup(selectedTransaction.value);
 }
 
 watch(isModalOpen, async (__new, __old) => {
   if (selectedModalType.value === Types.ITEM && !__new && __old) {
-    await axios
-      .get(`/transaction/list/${selectedTransaction.value.uuid}`)
-      .then((response: AxiosResponse) => {
-        const dbInfo = response.data as TItem[];
-        transactions.value = dbInfo;
-      })
-      .catch((error: AxiosError) => {
-        console.log(error);
-      });
+    await fetchTransactionsFromGroup(selectedTransaction.value);
   }
 });
 
 watch(isModalOpen, async (__new, __old) => {
   if (!__new && __old) {
-    await axios
-      .get(`/transaction/list/group/${user.value.uuid}`)
-      .then((response: AxiosResponse) => {
-        const dbInfo = response.data as TGroup[];
-        groups.value = dbInfo;
-        if (groups.value.length === 1) {
-          selectedTransaction.value = groups.value[defaultTransactionIndex];
-        } else {
-          selectedTransaction.value = groups.value.filter((group) => {
-            return group.uuid === selectedTransaction.value.uuid;
-          })[defaultTransactionIndex];
-        }
-      })
-      .catch((error: AxiosError) => {
-        console.log(error);
-      });
+    await fetchTransactionGroups(user.value);
   }
 });
 
@@ -196,7 +198,9 @@ const handleExportClick = () => {
   const data = transactions.value;
   const fileName = selectedTransaction.value.name;
   const exportType = exportFromJSON.types.csv;
-  exportFromJSON({ data, fileName, exportType });
+  if (data) {
+    exportFromJSON({ data, fileName, exportType });
+  }
 };
 
 const handleGroupTabClick = (group: TGroup) => {

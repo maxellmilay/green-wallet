@@ -43,12 +43,12 @@ import { storeToRefs } from 'pinia';
 import useModalStore from '../../stores/useModalStore';
 import useTransactionStore from '../../stores/useTransactionStore';
 import ModalLayout from './ModalLayout.vue';
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import { defaultInputString } from '../../constants/defaults';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import useUserStore from '../../stores/useUserStore';
 import Types from '../../enums/types';
-import { TGroup } from '../../types/TTransaction';
+import APIRoutes from '../../enums/apiRoutes';
 
 const transactionStore = useTransactionStore();
 const { selectedTransaction } = storeToRefs(transactionStore);
@@ -63,7 +63,7 @@ const name = ref(defaultName);
 
 const handleAddGroupClick = async () => {
   await axios
-    .post('/transaction/create-group', { name: name.value, owner: user.uuid })
+    .post(APIRoutes.CREATE_GROUP, { name: name.value, owner: user.uuid })
     .then(() => {
       modalStore.closeModal();
     })
@@ -74,7 +74,7 @@ const handleAddGroupClick = async () => {
 
 const handleUpdateGroupClick = async () => {
   await axios
-    .put(`/transaction/group/${selectedTransaction.value.uuid}`, {
+    .put(`${APIRoutes.UPDATE_GROUP}${selectedTransaction.value.uuid}`, {
       name: name.value,
       owner: user.uuid,
     })
@@ -88,15 +88,9 @@ const handleUpdateGroupClick = async () => {
 
 const handleDeleteGroupClick = async () => {
   await axios
-    .delete(`/transaction/group/${selectedTransaction.value.uuid}`)
+    .delete(`${APIRoutes.DELETE_GROUP}${selectedTransaction.value.uuid}`)
     .then(() => {
       modalStore.closeModal();
-    })
-    .then(async () => {
-      await axios.get(`transaction/list/group/${user.uuid}`).then((response: AxiosResponse) => {
-        const dbData = response.data;
-        transactionStore.setSelectedTransaction(dbData[0]);
-      });
     })
     .catch((error: AxiosError) => {
       console.log(error);
