@@ -9,12 +9,7 @@
   </button>
 </template>
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
-import useModalStore from '../stores/useModalStore';
-import useTransactionStore from '../stores/useTransactionStore';
-
-const { openItemModal } = useModalStore();
-const { setSelectedItem } = useTransactionStore();
+import { computed, ref } from 'vue';
 
 const isPositive = ref(false);
 

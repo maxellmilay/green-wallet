@@ -9,7 +9,7 @@
         id="transaction-name"
         type="text"
         class="w-[55%] lg:w-[60%] bg-black border border-site-gray rounded px-3 py-2 md:p-4"
-        v-model="name"
+        v-model="untrimmedName"
         key="Name"
       />
     </div>
@@ -46,7 +46,7 @@ import { storeToRefs } from 'pinia';
 import useModalStore from '../../stores/useModalStore';
 import useTransactionStore from '../../stores/useTransactionStore';
 import ModalLayout from './ModalLayout.vue';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { defaultInputString, defaultTransactionIndex } from '../../constants/defaults';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import useUserStore from '../../stores/useUserStore';
@@ -67,9 +67,13 @@ const { user } = storeToRefs(userStore);
 const defaultName =
   selectedModalFunction.value === Types.ADD ? defaultInputString : selectedTransaction.value.name;
 
-const name = ref(defaultName);
+const untrimmedName = ref(defaultName);
 const errors = ref([] as string[]);
 const groups = ref([] as TGroup[]);
+
+const name = computed(() => {
+  return untrimmedName.value.trim();
+});
 
 const fetchTransactionGroups = async () => {
   await axios

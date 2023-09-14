@@ -8,7 +8,9 @@
       class="flex flex-col items-center md:items-end"
       v-if="groups.length !== 0 && selectedTransaction"
     >
-      <p class="font-montserrat text-2xl text-site-green">{{ selectedTransaction.balance }}</p>
+      <p class="font-montserrat text-2xl" :class="balanceColor">
+        {{ selectedTransaction.balance }}
+      </p>
       <p class="font-karla font-thin text-xs md:text-base">Balance</p>
     </div>
   </header>
@@ -88,7 +90,7 @@ import useTransactionStore from '../stores/useTransactionStore';
 import useModalStore from '../stores/useModalStore';
 import { storeToRefs } from 'pinia';
 import exportFromJSON from 'export-from-json';
-import { ref, watch, inject } from 'vue';
+import { ref, watch, inject, computed } from 'vue';
 import axios, { AxiosResponse, AxiosError } from 'axios';
 import { VueCookies } from 'vue-cookies';
 import useUserStore from '../stores/useUserStore';
@@ -214,4 +216,14 @@ const handleExportClick = () => {
 const handleGroupTabClick = (group: TGroup) => {
   transactionStore.setSelectedTransaction(group);
 };
+
+const balanceColor = computed(() => {
+  if (selectedTransaction.value.balance < 0) {
+    return 'text-site-red';
+  } else if (selectedTransaction.value.balance > 0) {
+    return 'text-site-green';
+  } else {
+    return 'text-blue-300';
+  }
+});
 </script>

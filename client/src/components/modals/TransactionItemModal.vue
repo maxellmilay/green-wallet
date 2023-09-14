@@ -9,7 +9,7 @@
         id="transaction-name"
         type="text"
         class="w-[55%] lg:w-[60%] bg-black border border-site-gray rounded px-3 py-2 md:p-4"
-        v-model="item.name"
+        v-model="untrimmedItem.name"
         key="Name"
       />
     </div>
@@ -19,7 +19,7 @@
         id="transaction-amount"
         type="number"
         class="w-[55%] lg:w-[60%] bg-black border border-site-gray rounded px-3 py-2 md:p-4"
-        v-model="item.amount"
+        v-model="untrimmedItem.amount"
         key="Amount"
       />
     </div>
@@ -58,7 +58,7 @@ import { storeToRefs } from 'pinia';
 import useModalStore from '../../stores/useModalStore';
 import Types from '../../enums/types';
 import { defaultInputString, defaultInputNumber } from '../../constants/defaults';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import axios, { AxiosError } from 'axios';
 import APIRoutes from '../../enums/apiRoutes';
 import Errors from '../../enums/errors';
@@ -77,8 +77,12 @@ const defaultItem =
         amount: defaultInputNumber,
       };
 
-const item = ref(defaultItem);
+const untrimmedItem = ref(defaultItem);
 const errors = ref([] as string[]);
+
+const item = computed(() => {
+  return { ...untrimmedItem.value, name: untrimmedItem.value.name.trim() };
+});
 
 const handleAddItemClick = async () => {
   console.log(typeof item.value.amount === typeof defaultInputNumber);
@@ -160,8 +164,6 @@ const handleUpdateItemClick = async () => {
       });
     }
   }
-
-  console.log(errors);
 
   if (errors.value.length === 0) {
     await axios
