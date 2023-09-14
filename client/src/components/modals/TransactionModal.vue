@@ -47,24 +47,55 @@ import useModalStore from '../../stores/useModalStore';
 import useTransactionStore from '../../stores/useTransactionStore';
 import ModalLayout from './ModalLayout.vue';
 import { ref } from 'vue';
-import { defaultInputString } from '../../constants/defaults';
+import { defaultInputString, defaultTransactionIndex } from '../../constants/defaults';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import useUserStore from '../../stores/useUserStore';
 import Types from '../../enums/types';
 import APIRoutes from '../../enums/apiRoutes';
 import Errors from '../../enums/errors';
+import { TGroup } from '../../types/TTransaction';
+import { TUser } from '../../types/TUser';
 
 const transactionStore = useTransactionStore();
-const { selectedTransaction } = storeToRefs(transactionStore);
 const modalStore = useModalStore();
+const userStore = useUserStore();
+
+const { selectedTransaction } = storeToRefs(transactionStore);
 const { selectedModalFunction } = storeToRefs(modalStore);
-const { user } = useUserStore();
+const { user } = storeToRefs(userStore);
 
 const defaultName =
   selectedModalFunction.value === Types.ADD ? defaultInputString : selectedTransaction.value.name;
 
 const name = ref(defaultName);
 const errors = ref([] as string[]);
+const groups = ref([] as TGroup[]);
+
+const fetchTransactionGroups = async () => {
+  await axios
+    .get(`${APIRoutes.FETCH_TRANSACTION_GROUPS}${user.value.uuid}`)
+    .then((response: AxiosResponse) => {
+      const dbInfo = response.data as TGroup[];
+      groups.value = dbInfo;
+    })
+    .catch((error: AxiosError) => {
+      console.log(error);
+    });
+};
+
+const doesGroupNameExist = async (input: string) => {
+  const doesExist = (element: TGroup) => {
+    return element.name === input;
+  };
+
+  await fetchTransactionGroups();
+
+  if (groups.value.length !== 0) {
+    return groups.value.some(doesExist);
+  } else {
+    return false;
+  }
+};
 
 const handleAddGroupClick = async () => {
   if (!errors.value.includes(Errors.EMPTY_NAME)) {
@@ -79,9 +110,21 @@ const handleAddGroupClick = async () => {
     }
   }
 
+  if (!errors.value.includes(Errors.NAME_ALREADY_EXISTS)) {
+    if (await doesGroupNameExist(name.value)) {
+      errors.value.push(Errors.NAME_ALREADY_EXISTS);
+    }
+  } else {
+    if (!(await doesGroupNameExist(name.value))) {
+      errors.value = errors.value.filter((error) => {
+        return error !== Errors.NAME_ALREADY_EXISTS;
+      });
+    }
+  }
+
   if (errors.value.length === 0) {
     await axios
-      .post(APIRoutes.CREATE_GROUP, { name: name.value, owner: user.uuid })
+      .post(APIRoutes.CREATE_GROUP, { name: name.value, owner: user.value.uuid })
       .then(() => {
         modalStore.closeModal(Types.ADD);
       })
@@ -104,11 +147,23 @@ const handleUpdateGroupClick = async () => {
     }
   }
 
+  if (!errors.value.includes(Errors.NAME_ALREADY_EXISTS)) {
+    if (await doesGroupNameExist(name.value)) {
+      errors.value.push(Errors.NAME_ALREADY_EXISTS);
+    }
+  } else {
+    if (!(await doesGroupNameExist(name.value))) {
+      errors.value = errors.value.filter((error) => {
+        return error !== Errors.NAME_ALREADY_EXISTS;
+      });
+    }
+  }
+
   if (errors.value.length === 0) {
     await axios
       .put(`${APIRoutes.UPDATE_GROUP}${selectedTransaction.value.uuid}`, {
         name: name.value,
-        owner: user.uuid,
+        owner: user.value.uuid,
       })
       .then(() => {
         modalStore.closeModal(Types.UPDATE);
