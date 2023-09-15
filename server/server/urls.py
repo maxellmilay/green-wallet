@@ -21,5 +21,4 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('social_auth/', include(('social_auth.urls','social_auth'),namespace='social_auth')),
     path('transaction/', include(('transaction.urls','transaction'), namespace='transaction')),
-    path('api-sileo/', include(('sileo.urls', 'sileo'), namespace='sileo'))
 ]
