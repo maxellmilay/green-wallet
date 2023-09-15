@@ -1,6 +1,14 @@
 from django.db import models
 import uuid
+from json import JSONEncoder
 from social_auth.models import GoogleUser
+
+# UUID not serializable fix
+JSONEncoder_olddefault = JSONEncoder.default
+def JSONEncoder_newdefault(self, o):
+    if isinstance(o, uuid.UUID): return str(o)
+    return JSONEncoder_olddefault(self, o)
+JSONEncoder.default = JSONEncoder_newdefault
 
 class TransactionGroup(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, primary_key=True)

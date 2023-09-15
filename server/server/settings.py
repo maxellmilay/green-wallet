@@ -49,6 +49,7 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'corsheaders',
+    'sileo',
 
     'allauth',
 ]
@@ -167,3 +168,7 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
 )
+
+SILEO_API_FALLBACK_VERSION = 'v1'
+SILEO_ALLOWED_VERSIONS = ['v1']
+API_MIDDLEWARE = []
