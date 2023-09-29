@@ -104,17 +104,8 @@ WSGI_APPLICATION = 'server.wsgi.application'
 
 # PostgreSQL
 DATABASES = {
-    'default': dj_database_url.config(default='postgres://maxell:vuwtoqr8ed7tYMvPmiKd6SXslX1IkUac@dpg-ckb24vusmu8c73a4l1vg-a/greenwallet',conn_max_age=600)
+    'default': dj_database_url.config(default='postgres://maxell:vuwtoqr8ed7tYMvPmiKd6SXslX1IkUac@dpg-ckb24vusmu8c73a4l1vg-a.oregon-postgres.render.com/greenwallet',conn_max_age=600)
 }
-
-# SQLite 3
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
