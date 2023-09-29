@@ -35,7 +35,7 @@ const config = {
 };
 
 const fetchUserData = async () => {
-  console.log(config);
+  console.log($cookies?.get('Token'));
   await axios
     .get(APIRoutes.FETCH_USER_DATA, config)
     .then((response: AxiosResponse) => {
