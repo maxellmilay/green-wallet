@@ -102,4 +102,6 @@ def validate_jwt_token(jwt_token):
 
 def get_user_data(request):
     jwt_data = validate_jwt_token(request.headers.get('Authorization').split(' ')[1])
+    print("TOKEN: ",request.headers.get('Authorization').split(' ')[1])
+    print("EMAIL: ",jwt_data['email'])
     return jwt_data['email']
