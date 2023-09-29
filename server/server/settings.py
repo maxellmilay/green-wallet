@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+import dj_database_url
 
 load_dotenv()
 
@@ -103,14 +104,7 @@ WSGI_APPLICATION = 'server.wsgi.application'
 
 # PostgreSQL
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('DB_NAME'),
-        'USER': os.environ.get('DB_USER'),
-        'PASSWORD':os.environ.get('DB_PASSWORD'),
-        'HOST':os.environ.get('DB_HOST'),
-        'PORT':os.environ.get('DB_PORT')   
-    }
+    'default': dj_database_url.config(default='postgres://maxell:vuwtoqr8ed7tYMvPmiKd6SXslX1IkUac@dpg-ckb24vusmu8c73a4l1vg-a/greenwallet',conn_max_age=600)
 }
 
 # SQLite 3
