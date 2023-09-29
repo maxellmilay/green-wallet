@@ -35,6 +35,7 @@ const config = {
 };
 
 const fetchUserData = async () => {
+  console.log(config);
   await axios
     .get(APIRoutes.FETCH_USER_DATA, config)
     .then((response: AxiosResponse) => {
