@@ -30,23 +30,11 @@ const profileData: Ref<TUser> = ref({} as TUser);
 
 const $cookies = inject<VueCookies>('$cookies');
 
-function getCookie(name: string) {
-  const cookies = document.cookie.split(';');
-  for (let i = 0; i < cookies.length; i++) {
-    const cookie = cookies[i].trim();
-    if (cookie.startsWith(name + '=')) {
-      return cookie.substring(name.length + 1);
-    }
-  }
-  return null;
-}
+const config = {
+  headers: { Authorization: `Bearer ${$cookies?.get('Token')}` },
+};
 
 const fetchUserData = async () => {
-  const config = {
-    headers: { Authorization: `Bearer ${getCookie('Token')}` },
-  };
-  console.log('INNER CONFIG: ', config);
-
   await axios
     .get(APIRoutes.FETCH_USER_DATA, config)
     .then((response: AxiosResponse) => {
