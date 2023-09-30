@@ -24,7 +24,7 @@ class GoogleSocialAuthView(APIView):
         jwt_token = create_jwt_token(validated_data)
 
         response = redirect(f"{os.environ.get('BASE_FRONTEND_URL')}/dashboard")
-        response.set_cookie('Token',jwt_token, max_age = 60 * 24 * 60 * 60)
+        response.set_cookie('Token',jwt_token,samesite='Lax',secure=True, max_age = 60 * 24 * 60 * 60)
 
         return response
 
