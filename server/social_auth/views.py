@@ -25,7 +25,7 @@ class GoogleSocialAuthView(APIView):
 
         response = redirect(f"{os.environ.get('BASE_FRONTEND_URL')}/dashboard")
         print("TOKEN: ",jwt_token)
-        response.set_cookie('Token',jwt_token,samesite='Lax',secure=True,domain='greenwallet.vercel.app', max_age = 60 * 24 * 60 * 60)
+        response.set_cookie('Token',jwt_token,domain='greenwallet.vercel.app', max_age = 60 * 24 * 60 * 60)
 
         return response
 
