@@ -105,7 +105,7 @@ WSGI_APPLICATION = 'server.wsgi.application'
 
 # PostgreSQL
 DATABASES = {
-    'default': dj_database_url.config(default='postgres://maxell:TfHd1em51oDdPC80XEnueCZ8VCyVUyrr@dpg-cpghs1e3e1ms73ag5nag-a/greenwallet_cpjk')
+    'default': dj_database_url.config(default=os.environ.get('DB_URL'))
 }
 
 # Password validation
